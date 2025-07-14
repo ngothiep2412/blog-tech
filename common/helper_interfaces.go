@@ -1,54 +1,21 @@
 package common
 
 import (
-	"errors"
-	"time"
-
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-type Claims struct {
-	UserID uint   `json:"user_id"`
-	Email  string `json:"email"`
-	jwt.RegisteredClaims
+type GormComponent interface {
+	GetDB() *gorm.DB
 }
 
-type JwtManager struct {
-	secretKey string
+type ConfigComponent interface {
+	GetGRPCPort() int
+	GetGRPCServerAddress() string
+	GetGRPCUserAddress() string
 }
 
-func NewJwtManager(secretKey string) *JwtManager {
-	return &JwtManager{secretKey: secretKey}
-}
-
-func (j *JwtManager) GenerateToken(userID uint, email string) (string, error) {
-	claims := &Claims{
-		UserID: userID,
-		Email:  email,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			NotBefore: jwt.NewNumericDate(time.Now()),
-			Issuer:    "blog-tech",
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(j.secretKey))
-}
-
-func (j *JwtManager) ValidateToken(tokenString string) (*Claims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(j.secretKey), nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	if !token.Valid {
-		return nil, errors.New("invalid token")
-	}
-	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
-		return claims, nil
-	}
-	return nil, errors.New("invalid token")
+type GINComponent interface {
+	GetPort() int
+	GetRouter() *gin.Engine
 }

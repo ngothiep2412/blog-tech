@@ -1,40 +1,94 @@
 package cmd
 
 import (
+	"blog-tech/common"
+	"blog-tech/composer"
+	"blog-tech/internal/users/proto/pb"
+	sctx "blog-tech/plugin"
+	"blog-tech/plugin/ginc"
+	"blog-tech/plugin/gormc"
+	"fmt"
 	"log"
-	"net/http"
+	"net"
 	"os"
+	"time"
 
-	"github.com/joho/godotenv"
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
+	"google.golang.org/grpc"
 )
+
+func newServiceCtx() sctx.ServiceContext {
+	return sctx.NewServiceContext(
+		sctx.WithName("Blog Tech Service"),
+		sctx.WithComponent(ginc.NewGin(common.KeyCompGIN)),
+		sctx.WithComponent(gormc.NewGormDB(common.KeyCompMySQL, "")),
+		sctx.WithComponent(NewConfig()),
+	)
+}
 
 var rootCmd = &cobra.Command{
 	Use:   "blog-tech",
 	Short: "Blog Tech",
 	Long:  "A tech blog application",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := godotenv.Load(); err != nil {
-			log.Printf("Warning: No .env file found: %v", err)
+		serviceCtx := newServiceCtx()
+
+		logger := sctx.GlobalLogger().GetLogger("service")
+
+		time.Sleep(time.Second * 5)
+
+		if err := serviceCtx.Load(); err != nil {
+			logger.Fatal(err)
 		}
 
-		dsn := os.Getenv("MYSQL_URI")
-		if dsn == "" {
-			log.Fatal("MYSQL_URI environment variable is not set")
+		ginComp := serviceCtx.MustGet(common.KeyCompGIN).(common.GINComponent)
+
+		router := ginComp.GetRouter()
+		router.Use(gin.Recovery(), gin.Logger())
+
+		router.Use()
+
+		go StartGRPCServices(serviceCtx)
+
+		v1 := router.Group("/v1")
+
+		SetupRoutes(v1, serviceCtx)
+
+		if err := router.Run(fmt.Sprintf(":%d", ginComp.GetPort())); err != nil {
+			logger.Fatal(err)
 		}
 
-		db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		db = db.Debug()
-
-		log.Printf("Server starting on port :8080...")
-		http.ListenAndServe(":8080", nil)
 	},
+}
+
+func SetupRoutes(router *gin.RouterGroup, serviceCtx sctx.ServiceContext) {
+	userAPIService := composer.ComposeUserService(serviceCtx)
+
+	router.POST("/register", userAPIService.Register())
+	router.POST("/login", userAPIService.Login())
+}
+
+func StartGRPCServices(serviceCtx sctx.ServiceContext) {
+	configComp := serviceCtx.MustGet(common.KeyCompConf).(common.ConfigComponent)
+
+	logger := serviceCtx.Logger("grpc")
+
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", configComp.GetGRPCPort()))
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	logger.Infof("GRPC Server is listening on %d ...\n", configComp.GetGRPCPort())
+
+	s := grpc.NewServer()
+
+	pb.RegisterUserServiceServer(s, composer.ComposeUserGRPCService(serviceCtx))
+
+	if err := s.Serve(lis); err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func Execute() {

@@ -2,86 +2,26 @@ syntax = "proto3";
 
 package user;
 
-option go_package = "blog-tech/internal/users/proto";
+option go_package = "pb/";
 
-import "google/protobuf/timestamp.proto";
-
-service UserService {
-    rpc Register(RegisterRequest) returns (RegisterResponse);
-    rpc Login(LoginRequest) returns (LoginResponse);
-    rpc GetProfile(GetProfileRequest) returns (GetProfileResponse);
-    rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
-    rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
+message GetUserByIdRequest {
+    int32 user_id = 1;
 }
 
-message RegisterRequest {
-    string username = 1;
-    string email = 2;
-    string password = 3;
-    string full_name = 4;
+message GetUserByIdResponse {
+    bool exists = 1;
+    string message = 2;
+    UserBasicInfo user = 3;
 }
 
-message RegisterResponse {
+message UserBasicInfo {
     int32 id = 1;
     string username = 2;
-    string email = 3;
-    string full_name = 4;
-}
-
-message LoginRequest {
-    string email = 1;
-    string password = 2;
-}
-
-message LoginResponse {
-    bool success = 1;
-    string message = 2;
-    User user = 3;
-    string token = 4;
-}
-
-message GetProfileRequest {
-    uint32 user_id = 1;
-}
-  
-message GetProfileResponse {
-    bool success = 1;
-    string message = 2;
-    User user = 3;
-}
-
-message UpdateProfileRequest {
-    uint32 user_id = 1;
-    string full_name = 2;
-    string bio = 3;
+    string full_name = 3;
     string avatar_url = 4;
+    bool is_active = 5;
 }
-  
-message UpdateProfileResponse {
-    bool success = 1;
-    string message = 2;
-    User user = 3;
-}
-  
-message ChangePasswordRequest {
-    uint32 user_id = 1;
-    string old_password = 2;
-    string new_password = 3;
-}
-  
-message ChangePasswordResponse {
-    bool success = 1;
-    string message = 2;
-}
-  
-message User {
-    uint32 id = 1;
-    string username = 2;
-    string email = 3;
-    string full_name = 4;
-    string bio = 5;
-    string avatar_url = 6;
-    bool is_active = 7;
-    google.protobuf.Timestamp created_at = 8;
-    google.protobuf.Timestamp updated_at = 9;
+
+service UserService {
+    rpc GetUserById(GetUserByIdRequest) returns (GetUserByIdResponse);
 }

@@ -3,16 +3,23 @@ package usermodel
 import "errors"
 
 var (
-	ErrFirstNameIsEmpty = errors.New("first name can not be blank")
-	ErrFirstNameTooLong = errors.New("first name too long, max character is 30")
-	ErrLastNameIsEmpty  = errors.New("last name can not be blank")
-	ErrLastNameTooLong  = errors.New("last name too long, max character is 30")
-	ErrEmailIsNotValid  = errors.New("email is not valid")
-	ErrPhoneIsNotValid  = errors.New("phone is not valid")
-	ErrGenderIsNotValid = errors.New("gender is not valid")
-	ErrRoleIsNotValid   = errors.New("role is not valid")
-	ErrStatusIsNotValid = errors.New("status is not valid")
-	ErrCannotGetUser    = errors.New("cannot get user info")
-	ErrCannotCreateUser = errors.New("cannot create new user")
-	ErrCannotGetUsers   = errors.New("cannot get users")
+	// User errors
+	ErrUserNotFound    = errors.New("user not found")
+	ErrUserExists      = errors.New("user already exists")
+	ErrEmailExists     = errors.New("email already exists")
+	ErrUsernameExists  = errors.New("username already exists")
+	ErrInvalidPassword = errors.New("invalid password")
+	ErrUserInactive    = errors.New("user account is inactive")
+
+	// Validation errors
+	ErrInvalidEmail     = errors.New("invalid email format")
+	ErrInvalidUsername  = errors.New("invalid username format")
+	ErrPasswordTooShort = errors.New("password must be at least 6 characters")
+	ErrRequiredField    = errors.New("required field is missing")
+
+	// Auth errors
+	ErrInvalidCredentials = errors.New("invalid email or password")
+	ErrTokenGeneration    = errors.New("failed to generate token")
+	ErrTokenInvalid       = errors.New("invalid token")
+	ErrUnauthorized       = errors.New("unauthorized access")
 )

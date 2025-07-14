@@ -7,8 +7,8 @@ import (
 
 type Article struct {
 	common.SqlModel  `json:",inline"`
-	UserID           uint       `json:"user_id" gorm:"column:user_id"`
-	CategoryID       uint       `json:"category_id" gorm:"column:category_id"`
+	UserID           int        `json:"user_id" gorm:"column:user_id"`
+	CategoryID       int        `json:"category_id" gorm:"column:category_id"`
 	Title            string     `json:"title" gorm:"column:title"`
 	Slug             string     `json:"slug" gorm:"column:slug"`
 	Content          string     `json:"content" gorm:"column:content"`

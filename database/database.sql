@@ -14,7 +14,7 @@ CREATE TABLE users (
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE INDEX idx_users_username ON users(username);
 CREATE INDEX idx_users_email ON users(email);
@@ -28,7 +28,7 @@ CREATE TABLE categories (
     color VARCHAR(7) COMMENT 'hex color',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE INDEX idx_categories_slug ON categories(slug);
 
@@ -52,7 +52,7 @@ CREATE TABLE articles (
     
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE INDEX idx_articles_user_id ON articles(user_id);
 CREATE INDEX idx_articles_category_id ON articles(category_id);
@@ -68,7 +68,7 @@ CREATE TABLE tags (
     usage_count INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE INDEX idx_tags_slug ON tags(slug);
 
@@ -80,7 +80,7 @@ CREATE TABLE article_tags (
     
     FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
     FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE INDEX idx_article_tags_article_id ON article_tags(article_id);
 CREATE INDEX idx_article_tags_tag_id ON article_tags(tag_id);
@@ -95,7 +95,7 @@ CREATE TABLE article_likes (
     UNIQUE KEY unique_article_user_like (article_id, user_id),
     FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE INDEX idx_article_likes_article_id ON article_likes(article_id);
 CREATE INDEX idx_article_likes_user_id ON article_likes(user_id);
@@ -111,7 +111,7 @@ CREATE TABLE article_shares (
     
     FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE INDEX idx_article_shares_article_id ON article_shares(article_id);
 CREATE INDEX idx_article_shares_user_id ON article_shares(user_id);
