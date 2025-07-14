@@ -1,0 +1,10 @@
+package tagmodel
+
+import "blog-tech/common"
+
+type Tag struct {
+	common.SqlModel `json:",inline"`
+	Name            string `json:"name" gorm:"column:name;unique"`
+	Slug            string `json:"slug" gorm:"column:slug;unique"`
+	UsageCount      int    `json:"usage_count" gorm:"column:usage_count"`
+}
