@@ -1,5 +1,7 @@
 package main
 
-func main() {
+import "blog-tech/cmd"
 
+func main() {
+	cmd.Execute()
 }
