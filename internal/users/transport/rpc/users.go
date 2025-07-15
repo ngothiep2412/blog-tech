@@ -1,4 +1,4 @@
-package rpc
+package userrpc
 
 import (
 	"blog-tech/common"
@@ -8,7 +8,7 @@ import (
 )
 
 type Business interface {
-	GetProfile(userID int) (*usermodel.User, error)
+	GetProfile(ctx context.Context, userID int) (*usermodel.User, error)
 }
 
 type grpcService struct {
@@ -22,7 +22,7 @@ func NewService(business Business) *grpcService {
 }
 
 func (s *grpcService) GetUserById(ctx context.Context, req *pb.GetUserByIdRequest) (*pb.GetUserByIdResponse, error) {
-	user, err := s.business.GetProfile(int(req.UserId))
+	user, err := s.business.GetProfile(ctx, int(req.UserId))
 
 	if err != nil {
 		return nil, common.ErrInternalServerError.WithError(err.Error())

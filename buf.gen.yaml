@@ -1,8 +1,11 @@
 version: v1
 plugins:
 - plugin: go
-  out: internal/users/proto
-  opt: paths=import
+  out: .
+  opt:
+  - paths=source_relative
 - plugin: go-grpc
-  out: internal/users/proto
-  opt: paths=import,require_unimplemented_servers=false
+  out: .
+  opt:
+  - paths=source_relative
+  - require_unimplemented_servers=false

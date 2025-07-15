@@ -3,7 +3,9 @@ package cmd
 import (
 	"blog-tech/common"
 	"blog-tech/composer"
-	"blog-tech/internal/users/proto/pb"
+	categorypb "blog-tech/internal/categories/proto/pb"
+	userpb "blog-tech/internal/users/proto/pb"
+	"blog-tech/middleware"
 	sctx "blog-tech/plugin"
 	"blog-tech/plugin/ginc"
 	"blog-tech/plugin/gormc"
@@ -49,6 +51,8 @@ var rootCmd = &cobra.Command{
 
 		router.Use()
 
+		router.SetTrustedProxies([]string{"127.0.0.1"})
+
 		go StartGRPCServices(serviceCtx)
 
 		v1 := router.Group("/v1")
@@ -64,9 +68,14 @@ var rootCmd = &cobra.Command{
 
 func SetupRoutes(router *gin.RouterGroup, serviceCtx sctx.ServiceContext) {
 	userAPIService := composer.ComposeUserService(serviceCtx)
+	categoryAPIService := composer.ComposeCategoryService(serviceCtx)
 
 	router.POST("/register", userAPIService.Register())
 	router.POST("/login", userAPIService.Login())
+
+	router.POST("/categories", middleware.RequireAuth(), categoryAPIService.CreateCategory())
+	router.PUT("/categories/:id", middleware.RequireAuth(), categoryAPIService.UpdateCategory())
+	router.GET("/categories/:id", middleware.RequireAuth(), categoryAPIService.GetCategoryByID())
 }
 
 func StartGRPCServices(serviceCtx sctx.ServiceContext) {
@@ -81,10 +90,13 @@ func StartGRPCServices(serviceCtx sctx.ServiceContext) {
 	}
 
 	logger.Infof("GRPC Server is listening on %d ...\n", configComp.GetGRPCPort())
+	logger.Infof("GRPC User Server is listening on %s ...\n", configComp.GetGRPCUserAddress())
+	logger.Infof("GRPC Category Server is listening on %s ...\n", configComp.GetGRPCCategoryAddress())
 
 	s := grpc.NewServer()
 
-	pb.RegisterUserServiceServer(s, composer.ComposeUserGRPCService(serviceCtx))
+	userpb.RegisterUserServiceServer(s, composer.ComposeUserGRPCService(serviceCtx))
+	categorypb.RegisterCategoryServiceServer(s, composer.ComposeCategoryGRPCService(serviceCtx))
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalln(err)

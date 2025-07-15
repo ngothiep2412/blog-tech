@@ -13,6 +13,7 @@ type ConfigComponent interface {
 	GetGRPCPort() int
 	GetGRPCServerAddress() string
 	GetGRPCUserAddress() string
+	GetGRPCCategoryAddress() string
 }
 
 type GINComponent interface {

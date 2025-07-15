@@ -2,20 +2,22 @@ package userbiz
 
 import (
 	"blog-tech/common"
+	userdto "blog-tech/internal/users/dto"
 	usermodel "blog-tech/internal/users/model"
 	usermysql "blog-tech/internal/users/repository/mysql"
+	"context"
 	"fmt"
 	"strings"
 )
 
 type UserBusiness interface {
-	Register(req *usermodel.CreateUserRequest) (*usermodel.User, string, error)
-	Login(req *usermodel.LoginRequest) (*usermodel.User, string, error)
-	GetProfile(userID int) (*usermodel.User, error)
-	UpdateProfile(userID int, req *usermodel.UpdateUserRequest) (*usermodel.User, error)
-	ChangePassword(userID int, req *usermodel.ChangePasswordRequest) error
-	ListUsers(limit, offset int) ([]*usermodel.User, int64, error)
-	DeactivateUser(userID int) error
+	Register(ctx context.Context, req *usermodel.CreateUserRequest) (*usermodel.User, string, error)
+	Login(ctx context.Context, req *userdto.LoginRequest) (*usermodel.User, string, error)
+	GetProfile(ctx context.Context, userID int) (*usermodel.User, error)
+	UpdateProfile(ctx context.Context, userID int, req *usermodel.UpdateUserRequest) (*usermodel.User, error)
+	ChangePassword(ctx context.Context, userID int, req *usermodel.ChangePasswordRequest) error
+	ListUsers(ctx context.Context, limit, offset int) ([]*usermodel.User, int64, error)
+	DeactivateUser(ctx context.Context, userID int) error
 }
 
 type userBusiness struct {
@@ -30,16 +32,16 @@ func NewUserBusiness(userRepo usermysql.UserRepository, jwtManager *common.JwtMa
 	}
 }
 
-func (b *userBusiness) Register(req *usermodel.CreateUserRequest) (*usermodel.User, string, error) {
+func (b *userBusiness) Register(ctx context.Context, req *usermodel.CreateUserRequest) (*usermodel.User, string, error) {
 	if err := req.Validate(); err != nil {
 		return nil, "", err
 	}
 
-	if _, err := b.userRepo.GetUserByEmail(req.Email); err == nil {
+	if _, err := b.userRepo.GetUserByEmail(ctx, req.Email); err == nil {
 		return nil, "", usermodel.ErrEmailExists
 	}
 
-	if _, err := b.userRepo.GetUserByUsername(req.Username); err == nil {
+	if _, err := b.userRepo.GetUserByUsername(ctx, req.Username); err == nil {
 		return nil, "", usermodel.ErrUsernameExists
 	}
 
@@ -56,7 +58,7 @@ func (b *userBusiness) Register(req *usermodel.CreateUserRequest) (*usermodel.Us
 		IsActive:     true,
 	}
 
-	if err := b.userRepo.Create(user); err != nil {
+	if err := b.userRepo.Create(ctx, user); err != nil {
 		return nil, "", fmt.Errorf("failed to create user: %w", err)
 	}
 
@@ -68,12 +70,12 @@ func (b *userBusiness) Register(req *usermodel.CreateUserRequest) (*usermodel.Us
 	return user, token, nil
 }
 
-func (b *userBusiness) Login(req *usermodel.LoginRequest) (*usermodel.User, string, error) {
+func (b *userBusiness) Login(ctx context.Context, req *userdto.LoginRequest) (*usermodel.User, string, error) {
 	if req.Email == "" || req.Password == "" {
 		return nil, "", usermodel.ErrRequiredField
 	}
 
-	user, err := b.userRepo.GetUserByEmail(strings.ToLower(req.Email))
+	user, err := b.userRepo.GetUserByEmail(ctx, strings.ToLower(req.Email))
 	if err != nil {
 		if err == usermodel.ErrUserNotFound {
 			return nil, "", usermodel.ErrInvalidCredentials
@@ -97,42 +99,31 @@ func (b *userBusiness) Login(req *usermodel.LoginRequest) (*usermodel.User, stri
 	return user, token, nil
 }
 
-func (b *userBusiness) GetProfile(userID int) (*usermodel.User, error) {
-	user, err := b.userRepo.GetUserByID(userID)
+func (b *userBusiness) GetProfile(ctx context.Context, userID int) (*usermodel.User, error) {
+	user, err := b.userRepo.GetUserByID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (b *userBusiness) UpdateProfile(userID int, req *usermodel.UpdateUserRequest) (*usermodel.User, error) {
+func (b *userBusiness) UpdateProfile(ctx context.Context, userID int, req *usermodel.UpdateUserRequest) (*usermodel.User, error) {
 	// Get existing user
-	user, err := b.userRepo.GetUserByID(userID)
+	user, err := b.userRepo.GetUserByID(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	// Update fields if provided
-	if req.FullName != "" {
-		user.FullName = req.FullName
-	}
-	if req.Bio != "" {
-		user.Bio = req.Bio
-	}
-	if req.AvatarURL != "" {
-		user.AvatarURL = req.AvatarURL
-	}
-
 	// Save updated user
-	if err := b.userRepo.Update(user); err != nil {
+	if err := b.userRepo.Update(ctx, user); err != nil {
 		return nil, fmt.Errorf("failed to update user: %w", err)
 	}
 
 	return user, nil
 }
 
-func (b *userBusiness) ChangePassword(userID int, req *usermodel.ChangePasswordRequest) error {
-	user, err := b.userRepo.GetUserByID(userID)
+func (b *userBusiness) ChangePassword(ctx context.Context, userID int, req *usermodel.ChangePasswordRequest) error {
+	user, err := b.userRepo.GetUserByID(ctx, userID)
 	if err != nil {
 		return err
 	}
@@ -150,20 +141,20 @@ func (b *userBusiness) ChangePassword(userID int, req *usermodel.ChangePasswordR
 	}
 
 	user.PasswordHash = hashedPassword
-	if err := b.userRepo.Update(user); err != nil {
+	if err := b.userRepo.Update(ctx, user); err != nil {
 		return fmt.Errorf("failed to update password: %w", err)
 	}
 
 	return nil
 }
 
-func (b *userBusiness) ListUsers(limit, offset int) ([]*usermodel.User, int64, error) {
-	users, err := b.userRepo.List(limit, offset)
+func (b *userBusiness) ListUsers(ctx context.Context, limit, offset int) ([]*usermodel.User, int64, error) {
+	users, err := b.userRepo.List(ctx, limit, offset)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	total, err := b.userRepo.Count()
+	total, err := b.userRepo.Count(ctx)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -171,12 +162,12 @@ func (b *userBusiness) ListUsers(limit, offset int) ([]*usermodel.User, int64, e
 	return users, total, nil
 }
 
-func (b *userBusiness) DeactivateUser(userID int) error {
-	user, err := b.userRepo.GetUserByID(userID)
+func (b *userBusiness) DeactivateUser(ctx context.Context, userID int) error {
+	user, err := b.userRepo.GetUserByID(ctx, userID)
 	if err != nil {
 		return err
 	}
 
 	user.IsActive = false
-	return b.userRepo.Update(user)
+	return b.userRepo.Update(ctx, user)
 }

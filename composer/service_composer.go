@@ -2,8 +2,14 @@ package composer
 
 import (
 	"blog-tech/common"
-	userbiz "blog-tech/internal/users/biz"
-	"blog-tech/internal/users/proto/pb"
+	categorybiz "blog-tech/internal/categories/business"
+	categorypb "blog-tech/internal/categories/proto/pb"
+	categorymysql "blog-tech/internal/categories/store/mysql"
+	categorystorerpc "blog-tech/internal/categories/store/rpc"
+	categoryapi "blog-tech/internal/categories/transport/api"
+	categoryrpc "blog-tech/internal/categories/transport/rpc"
+	userbiz "blog-tech/internal/users/business"
+	userpb "blog-tech/internal/users/proto/pb"
 	usermysql "blog-tech/internal/users/repository/mysql"
 	sctx "blog-tech/plugin"
 	"log"
@@ -12,12 +18,18 @@ import (
 	"github.com/gin-gonic/gin"
 
 	userAPI "blog-tech/internal/users/transport/api"
-	"blog-tech/internal/users/transport/rpc"
+	userrpc "blog-tech/internal/users/transport/rpc"
 )
 
 type UserService interface {
 	Register() gin.HandlerFunc
 	Login() gin.HandlerFunc
+}
+
+type CategoryService interface {
+	CreateCategory() gin.HandlerFunc
+	UpdateCategory() gin.HandlerFunc
+	GetCategoryByID() gin.HandlerFunc
 }
 
 func ComposeUserService(serviceContext sctx.ServiceContext) UserService {
@@ -37,7 +49,7 @@ func ComposeUserService(serviceContext sctx.ServiceContext) UserService {
 	return serviceAPI
 }
 
-func ComposeUserGRPCService(serviceCtx sctx.ServiceContext) pb.UserServiceServer {
+func ComposeUserGRPCService(serviceCtx sctx.ServiceContext) userpb.UserServiceServer {
 	db := serviceCtx.MustGet(common.KeyCompMySQL).(common.GormComponent)
 	// jwtComp := serviceCtx.MustGet(common.KeyCompJWT).(common.JwtManager)
 
@@ -51,7 +63,30 @@ func ComposeUserGRPCService(serviceCtx sctx.ServiceContext) pb.UserServiceServer
 	userRepo := usermysql.NewUserRepository(db.GetDB())
 
 	biz := userbiz.NewUserBusiness(userRepo, jwtManager)
-	authService := rpc.NewService(biz)
+	authService := userrpc.NewService(biz)
 
 	return authService
+}
+
+func ComposeCategoryService(serviceContext sctx.ServiceContext) CategoryService {
+	db := serviceContext.MustGet(common.KeyCompMySQL).(common.GormComponent)
+	categoryRepo := categorymysql.NewCategoryStore(db.GetDB())
+
+	userClient := categorystorerpc.NewClient(ComposeUserRPCClient(serviceContext))
+
+	biz := categorybiz.NewCategoryBusiness(categoryRepo, userClient)
+	serviceAPI := categoryapi.NewHandler(biz)
+
+	return serviceAPI
+}
+
+func ComposeCategoryGRPCService(serviceCtx sctx.ServiceContext) categorypb.CategoryServiceServer {
+	db := serviceCtx.MustGet(common.KeyCompMySQL).(common.GormComponent)
+	categoryRepo := categorymysql.NewCategoryStore(db.GetDB())
+
+	biz := categorybiz.NewCategoryBusiness(categoryRepo, nil)
+
+	categoryService := categoryrpc.NewService(biz)
+
+	return categoryService
 }

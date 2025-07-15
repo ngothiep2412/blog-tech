@@ -22,4 +22,8 @@ var (
 	ErrTokenGeneration    = errors.New("failed to generate token")
 	ErrTokenInvalid       = errors.New("invalid token")
 	ErrUnauthorized       = errors.New("unauthorized access")
+
+	ErrCannotCreateUser = errors.New("cannot create user")
+	ErrCannotUpdateUser = errors.New("cannot update user")
+	ErrCannotDeleteUser = errors.New("cannot delete user")
 )

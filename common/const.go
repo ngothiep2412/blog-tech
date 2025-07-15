@@ -8,3 +8,7 @@ const (
 
 	MaskTypeUser = 1
 )
+
+const (
+	CurrentUser = "user"
+)

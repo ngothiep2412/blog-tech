@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package category;
+
+option go_package = "blog-tech/internal/categories/proto/pb/";
+
+
+message GetCategoryByIdRequest {
+    int32 category_id = 1;
+}
+
+message GetCategoryByIdResponse {
+    bool exists = 1;
+    string message = 2;
+    Category category = 3;
+}
+
+message Category {
+    int32 id = 1;
+    string name = 2;
+    string slug = 3;
+    string description = 4;
+}
+
+service CategoryService {
+    rpc GetCategoryById(GetCategoryByIdRequest) returns (GetCategoryByIdResponse);
+}
