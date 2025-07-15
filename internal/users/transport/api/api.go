@@ -20,7 +20,7 @@ func NewHandler(business userbiz.UserBusiness) *handler {
 	}
 }
 
-func (h *handler) Register() gin.HandlerFunc {
+func (h *handler) RegisterHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req usermodel.CreateUserRequest
 
@@ -42,7 +42,7 @@ func (h *handler) Register() gin.HandlerFunc {
 	}
 }
 
-func (h *handler) Login() gin.HandlerFunc {
+func (h *handler) LoginHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req userdto.LoginRequest
 

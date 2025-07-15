@@ -3,7 +3,7 @@ package categorybiz
 import (
 	"blog-tech/common"
 	categorymodel "blog-tech/internal/categories/model"
-	categoryrepository "blog-tech/internal/categories/store/mysql"
+	categoryrepository "blog-tech/internal/categories/repository/mysql"
 	usermodel "blog-tech/internal/users/model"
 	"context"
 )

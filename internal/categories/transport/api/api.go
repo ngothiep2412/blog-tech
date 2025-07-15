@@ -11,17 +11,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type handler struct {
+type api struct {
 	business categorybiz.CategoryBusiness
 }
 
-func NewHandler(business categorybiz.CategoryBusiness) *handler {
-	return &handler{
+func NewApi(business categorybiz.CategoryBusiness) *api {
+	return &api{
 		business: business,
 	}
 }
 
-func (h *handler) CreateCategory() gin.HandlerFunc {
+func (a *api) CreateCategoryHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req categorymodel.CategoryCreate
 
@@ -32,7 +32,7 @@ func (h *handler) CreateCategory() gin.HandlerFunc {
 
 		userID := c.MustGet(common.CurrentUser).(int)
 
-		if err := h.business.CreateCategory(c.Request.Context(), userID, &req); err != nil {
+		if err := a.business.CreateCategory(c.Request.Context(), userID, &req); err != nil {
 			common.WriteErrorResponse(c, err)
 			return
 		}
@@ -41,7 +41,7 @@ func (h *handler) CreateCategory() gin.HandlerFunc {
 	}
 }
 
-func (h *handler) UpdateCategory() gin.HandlerFunc {
+func (a *api) UpdateCategoryHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req categorymodel.CategoryUpdate
 
@@ -50,7 +50,7 @@ func (h *handler) UpdateCategory() gin.HandlerFunc {
 			return
 		}
 
-		if err := h.business.UpdateCategory(c.Request.Context(), &req); err != nil {
+		if err := a.business.UpdateCategory(c.Request.Context(), &req); err != nil {
 			common.WriteErrorResponse(c, err)
 			return
 		}
@@ -63,7 +63,7 @@ func (h *handler) UpdateCategory() gin.HandlerFunc {
 	}
 }
 
-func (h *handler) GetCategoryByID() gin.HandlerFunc {
+func (a *api) GetCategoryByIDHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
@@ -71,7 +71,7 @@ func (h *handler) GetCategoryByID() gin.HandlerFunc {
 			return
 		}
 
-		category, err := h.business.GetCategoryByID(c.Request.Context(), id)
+		category, err := a.business.GetCategoryByID(c.Request.Context(), id)
 		if err != nil {
 			common.WriteErrorResponse(c, err)
 			return

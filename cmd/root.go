@@ -70,12 +70,12 @@ func SetupRoutes(router *gin.RouterGroup, serviceCtx sctx.ServiceContext) {
 	userAPIService := composer.ComposeUserService(serviceCtx)
 	categoryAPIService := composer.ComposeCategoryService(serviceCtx)
 
-	router.POST("/register", userAPIService.Register())
-	router.POST("/login", userAPIService.Login())
+	router.POST("/register", userAPIService.RegisterHdl())
+	router.POST("/login", userAPIService.LoginHdl())
 
-	router.POST("/categories", middleware.RequireAuth(), categoryAPIService.CreateCategory())
-	router.PUT("/categories/:id", middleware.RequireAuth(), categoryAPIService.UpdateCategory())
-	router.GET("/categories/:id", middleware.RequireAuth(), categoryAPIService.GetCategoryByID())
+	router.POST("/categories", middleware.RequireAuth(), categoryAPIService.CreateCategoryHdl())
+	router.PUT("/categories/:id", middleware.RequireAuth(), categoryAPIService.UpdateCategoryHdl())
+	router.GET("/categories/:id", middleware.RequireAuth(), categoryAPIService.GetCategoryByIDHdl())
 }
 
 func StartGRPCServices(serviceCtx sctx.ServiceContext) {

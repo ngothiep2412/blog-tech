@@ -39,7 +39,7 @@ func (r *userRepository) Create(ctx context.Context, user *usermodel.User) error
 func (r *userRepository) GetUserByID(ctx context.Context, id int) (*usermodel.User, error) {
 	var user usermodel.User
 
-	if err := r.db.First(&user, id).Error; err != nil {
+	if err := r.db.Table(usermodel.User{}.TableName()).Where("id = ?", id).First(&user, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.Wrap(err, usermodel.ErrUserNotFound.Error())
 		}
@@ -51,7 +51,7 @@ func (r *userRepository) GetUserByID(ctx context.Context, id int) (*usermodel.Us
 func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*usermodel.User, error) {
 	var user usermodel.User
 
-	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
+	if err := r.db.Table(usermodel.User{}.TableName()).Where("email = ?", email).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.Wrap(err, usermodel.ErrUserNotFound.Error())
 		}
@@ -62,7 +62,7 @@ func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*use
 
 func (r *userRepository) GetUserByUsername(ctx context.Context, username string) (*usermodel.User, error) {
 	var user usermodel.User
-	if err := r.db.Where("username = ?", username).First(&user).Error; err != nil {
+	if err := r.db.Table(usermodel.User{}.TableName()).Where("username = ?", username).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.Wrap(err, usermodel.ErrUserNotFound.Error())
 		}
@@ -72,14 +72,14 @@ func (r *userRepository) GetUserByUsername(ctx context.Context, username string)
 }
 
 func (r *userRepository) Update(ctx context.Context, user *usermodel.User) error {
-	if err := r.db.Save(user).Error; err != nil {
+	if err := r.db.Table(usermodel.User{}.TableName()).Where("id = ?", user.ID).Updates(user).Error; err != nil {
 		return errors.Wrap(err, usermodel.ErrCannotUpdateUser.Error())
 	}
 	return nil
 }
 
 func (r *userRepository) Delete(ctx context.Context, id int) error {
-	if err := r.db.Delete(&usermodel.User{}, id).Error; err != nil {
+	if err := r.db.Table(usermodel.User{}.TableName()).Where("id = ?", id).Delete(&usermodel.User{}).Error; err != nil {
 		return errors.Wrap(err, usermodel.ErrCannotDeleteUser.Error())
 	}
 	return nil
@@ -87,7 +87,8 @@ func (r *userRepository) Delete(ctx context.Context, id int) error {
 
 func (r *userRepository) List(ctx context.Context, limit, offset int) ([]*usermodel.User, error) {
 	var users []*usermodel.User
-	if err := r.db.Limit(limit).Offset(offset).Find(&users).Error; err != nil {
+
+	if err := r.db.Table(usermodel.User{}.TableName()).Limit(limit).Offset(offset).Find(&users).Error; err != nil {
 		return nil, errors.WithStack(err)
 	}
 	return users, nil
@@ -95,7 +96,7 @@ func (r *userRepository) List(ctx context.Context, limit, offset int) ([]*usermo
 
 func (r *userRepository) Count(ctx context.Context) (int64, error) {
 	var count int64
-	if err := r.db.Model(&usermodel.User{}).Count(&count).Error; err != nil {
+	if err := r.db.Table(usermodel.User{}.TableName()).Select("id").Count(&count).Error; err != nil {
 		return 0, errors.WithStack(err)
 	}
 	return count, nil

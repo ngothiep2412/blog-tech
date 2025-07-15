@@ -7,21 +7,21 @@ import (
 	"context"
 )
 
-type Business interface {
+type CategoryBusiness interface {
 	GetCategoryByID(ctx context.Context, id int) (*categorymodel.Category, error)
 }
 
-type grpcService struct {
-	business Business
+type grpcCategoryService struct {
+	business CategoryBusiness
 }
 
-func NewService(business Business) *grpcService {
-	return &grpcService{
+func NewCategoryService(business CategoryBusiness) *grpcCategoryService {
+	return &grpcCategoryService{
 		business: business,
 	}
 }
 
-func (s *grpcService) GetCategoryById(ctx context.Context, req *pb.GetCategoryByIdRequest) (*pb.GetCategoryByIdResponse, error) {
+func (s *grpcCategoryService) GetCategoryById(ctx context.Context, req *pb.GetCategoryByIdRequest) (*pb.GetCategoryByIdResponse, error) {
 	category, err := s.business.GetCategoryByID(ctx, int(req.CategoryId))
 
 	if err != nil {

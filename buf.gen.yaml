@@ -1,11 +1,8 @@
 version: v1
 plugins:
 - plugin: go
-  out: .
-  opt:
-  - paths=source_relative
+  out: ./internal
+  opt: paths=import
 - plugin: go-grpc
-  out: .
-  opt:
-  - paths=source_relative
-  - require_unimplemented_servers=false
+  out: ./internal
+  opt: paths=import,require_unimplemented_servers=false

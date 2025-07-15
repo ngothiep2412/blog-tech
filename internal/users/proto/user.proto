@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package user;
+package pb;
 
-option go_package = "blog-tech/internal/users/proto/pb";
+option go_package = "pb/";
 
 message GetUserByIdRequest {
     int32 user_id = 1;

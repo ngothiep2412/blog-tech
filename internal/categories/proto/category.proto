@@ -1,9 +1,8 @@
 syntax = "proto3";
 
-package category;
+package pb;
 
-option go_package = "blog-tech/internal/categories/proto/pb/";
-
+option go_package = "pb/";
 
 message GetCategoryByIdRequest {
     int32 category_id = 1;

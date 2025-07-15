@@ -4,8 +4,8 @@ import (
 	"blog-tech/common"
 	categorybiz "blog-tech/internal/categories/business"
 	categorypb "blog-tech/internal/categories/proto/pb"
-	categorymysql "blog-tech/internal/categories/store/mysql"
-	categorystorerpc "blog-tech/internal/categories/store/rpc"
+	categorymysql "blog-tech/internal/categories/repository/mysql"
+	categorystorerpc "blog-tech/internal/categories/repository/rpc"
 	categoryapi "blog-tech/internal/categories/transport/api"
 	categoryrpc "blog-tech/internal/categories/transport/rpc"
 	userbiz "blog-tech/internal/users/business"
@@ -22,14 +22,14 @@ import (
 )
 
 type UserService interface {
-	Register() gin.HandlerFunc
-	Login() gin.HandlerFunc
+	RegisterHdl() gin.HandlerFunc
+	LoginHdl() gin.HandlerFunc
 }
 
 type CategoryService interface {
-	CreateCategory() gin.HandlerFunc
-	UpdateCategory() gin.HandlerFunc
-	GetCategoryByID() gin.HandlerFunc
+	CreateCategoryHdl() gin.HandlerFunc
+	UpdateCategoryHdl() gin.HandlerFunc
+	GetCategoryByIDHdl() gin.HandlerFunc
 }
 
 func ComposeUserService(serviceContext sctx.ServiceContext) UserService {
@@ -63,7 +63,7 @@ func ComposeUserGRPCService(serviceCtx sctx.ServiceContext) userpb.UserServiceSe
 	userRepo := usermysql.NewUserRepository(db.GetDB())
 
 	biz := userbiz.NewUserBusiness(userRepo, jwtManager)
-	authService := userrpc.NewService(biz)
+	authService := userrpc.NewUserService(biz)
 
 	return authService
 }
@@ -75,7 +75,7 @@ func ComposeCategoryService(serviceContext sctx.ServiceContext) CategoryService 
 	userClient := categorystorerpc.NewClient(ComposeUserRPCClient(serviceContext))
 
 	biz := categorybiz.NewCategoryBusiness(categoryRepo, userClient)
-	serviceAPI := categoryapi.NewHandler(biz)
+	serviceAPI := categoryapi.NewApi(biz)
 
 	return serviceAPI
 }
@@ -86,7 +86,7 @@ func ComposeCategoryGRPCService(serviceCtx sctx.ServiceContext) categorypb.Categ
 
 	biz := categorybiz.NewCategoryBusiness(categoryRepo, nil)
 
-	categoryService := categoryrpc.NewService(biz)
+	categoryService := categoryrpc.NewCategoryService(biz)
 
 	return categoryService
 }

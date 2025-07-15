@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CategoryService_GetCategoryById_FullMethodName = "/category.CategoryService/GetCategoryById"
+	CategoryService_GetCategoryById_FullMethodName = "/pb.CategoryService/GetCategoryById"
 )
 
 // CategoryServiceClient is the client API for CategoryService service.
@@ -106,7 +106,7 @@ func _CategoryService_GetCategoryById_Handler(srv interface{}, ctx context.Conte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var CategoryService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "category.CategoryService",
+	ServiceName: "pb.CategoryService",
 	HandlerType: (*CategoryServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

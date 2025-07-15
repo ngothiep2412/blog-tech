@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "pb/";
+
+message Tag {
+	int32 id = 1;
+	string name = 2;
+	string slug = 3;
+}
+
+message GetTagByIdRequest {
+	int32 tag_id = 1;
+}
+
+message GetTagByIdResponse {
+    bool exists = 1;
+    string message = 2;
+    Tag tag = 3;
+}
+
+service TagService {
+	rpc GetTagById(GetTagByIdRequest) returns (GetTagByIdResponse);
+}

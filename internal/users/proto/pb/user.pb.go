@@ -205,22 +205,22 @@ var File_internal_users_proto_user_proto protoreflect.FileDescriptor
 
 const file_internal_users_proto_user_proto_rawDesc = "" +
 	"\n" +
-	"\x1finternal/users/proto/user.proto\x12\x04user\"-\n" +
+	"\x1finternal/users/proto/user.proto\x12\x02pb\"-\n" +
 	"\x12GetUserByIdRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x05R\x06userId\"p\n" +
+	"\auser_id\x18\x01 \x01(\x05R\x06userId\"n\n" +
 	"\x13GetUserByIdResponse\x12\x16\n" +
 	"\x06exists\x18\x01 \x01(\bR\x06exists\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12'\n" +
-	"\x04user\x18\x03 \x01(\v2\x13.user.UserBasicInfoR\x04user\"\x94\x01\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12%\n" +
+	"\x04user\x18\x03 \x01(\v2\x11.pb.UserBasicInfoR\x04user\"\x94\x01\n" +
 	"\rUserBasicInfo\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x1b\n" +
 	"\tfull_name\x18\x03 \x01(\tR\bfullName\x12\x1d\n" +
 	"\n" +
 	"avatar_url\x18\x04 \x01(\tR\tavatarUrl\x12\x1b\n" +
-	"\tis_active\x18\x05 \x01(\bR\bisActive2Q\n" +
-	"\vUserService\x12B\n" +
-	"\vGetUserById\x12\x18.user.GetUserByIdRequest\x1a\x19.user.GetUserByIdResponseB\x05Z\x03pb/b\x06proto3"
+	"\tis_active\x18\x05 \x01(\bR\bisActive2M\n" +
+	"\vUserService\x12>\n" +
+	"\vGetUserById\x12\x16.pb.GetUserByIdRequest\x1a\x17.pb.GetUserByIdResponseB\x05Z\x03pb/b\x06proto3"
 
 var (
 	file_internal_users_proto_user_proto_rawDescOnce sync.Once
@@ -236,14 +236,14 @@ func file_internal_users_proto_user_proto_rawDescGZIP() []byte {
 
 var file_internal_users_proto_user_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_internal_users_proto_user_proto_goTypes = []any{
-	(*GetUserByIdRequest)(nil),  // 0: user.GetUserByIdRequest
-	(*GetUserByIdResponse)(nil), // 1: user.GetUserByIdResponse
-	(*UserBasicInfo)(nil),       // 2: user.UserBasicInfo
+	(*GetUserByIdRequest)(nil),  // 0: pb.GetUserByIdRequest
+	(*GetUserByIdResponse)(nil), // 1: pb.GetUserByIdResponse
+	(*UserBasicInfo)(nil),       // 2: pb.UserBasicInfo
 }
 var file_internal_users_proto_user_proto_depIdxs = []int32{
-	2, // 0: user.GetUserByIdResponse.user:type_name -> user.UserBasicInfo
-	0, // 1: user.UserService.GetUserById:input_type -> user.GetUserByIdRequest
-	1, // 2: user.UserService.GetUserById:output_type -> user.GetUserByIdResponse
+	2, // 0: pb.GetUserByIdResponse.user:type_name -> pb.UserBasicInfo
+	0, // 1: pb.UserService.GetUserById:input_type -> pb.GetUserByIdRequest
+	1, // 2: pb.UserService.GetUserById:output_type -> pb.GetUserByIdResponse
 	2, // [2:3] is the sub-list for method output_type
 	1, // [1:2] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

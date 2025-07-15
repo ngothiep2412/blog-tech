@@ -197,21 +197,21 @@ var File_internal_categories_proto_category_proto protoreflect.FileDescriptor
 
 const file_internal_categories_proto_category_proto_rawDesc = "" +
 	"\n" +
-	"(internal/categories/proto/category.proto\x12\bcategory\"9\n" +
+	"(internal/categories/proto/category.proto\x12\x02pb\"9\n" +
 	"\x16GetCategoryByIdRequest\x12\x1f\n" +
 	"\vcategory_id\x18\x01 \x01(\x05R\n" +
-	"categoryId\"{\n" +
+	"categoryId\"u\n" +
 	"\x17GetCategoryByIdResponse\x12\x16\n" +
 	"\x06exists\x18\x01 \x01(\bR\x06exists\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12.\n" +
-	"\bcategory\x18\x03 \x01(\v2\x12.category.CategoryR\bcategory\"d\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12(\n" +
+	"\bcategory\x18\x03 \x01(\v2\f.pb.CategoryR\bcategory\"d\n" +
 	"\bCategory\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
 	"\x04slug\x18\x03 \x01(\tR\x04slug\x12 \n" +
-	"\vdescription\x18\x04 \x01(\tR\vdescription2i\n" +
-	"\x0fCategoryService\x12V\n" +
-	"\x0fGetCategoryById\x12 .category.GetCategoryByIdRequest\x1a!.category.GetCategoryByIdResponseB\x05Z\x03pb/b\x06proto3"
+	"\vdescription\x18\x04 \x01(\tR\vdescription2]\n" +
+	"\x0fCategoryService\x12J\n" +
+	"\x0fGetCategoryById\x12\x1a.pb.GetCategoryByIdRequest\x1a\x1b.pb.GetCategoryByIdResponseB\x05Z\x03pb/b\x06proto3"
 
 var (
 	file_internal_categories_proto_category_proto_rawDescOnce sync.Once
@@ -227,14 +227,14 @@ func file_internal_categories_proto_category_proto_rawDescGZIP() []byte {
 
 var file_internal_categories_proto_category_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_internal_categories_proto_category_proto_goTypes = []any{
-	(*GetCategoryByIdRequest)(nil),  // 0: category.GetCategoryByIdRequest
-	(*GetCategoryByIdResponse)(nil), // 1: category.GetCategoryByIdResponse
-	(*Category)(nil),                // 2: category.Category
+	(*GetCategoryByIdRequest)(nil),  // 0: pb.GetCategoryByIdRequest
+	(*GetCategoryByIdResponse)(nil), // 1: pb.GetCategoryByIdResponse
+	(*Category)(nil),                // 2: pb.Category
 }
 var file_internal_categories_proto_category_proto_depIdxs = []int32{
-	2, // 0: category.GetCategoryByIdResponse.category:type_name -> category.Category
-	0, // 1: category.CategoryService.GetCategoryById:input_type -> category.GetCategoryByIdRequest
-	1, // 2: category.CategoryService.GetCategoryById:output_type -> category.GetCategoryByIdResponse
+	2, // 0: pb.GetCategoryByIdResponse.category:type_name -> pb.Category
+	0, // 1: pb.CategoryService.GetCategoryById:input_type -> pb.GetCategoryByIdRequest
+	1, // 2: pb.CategoryService.GetCategoryById:output_type -> pb.GetCategoryByIdResponse
 	2, // [2:3] is the sub-list for method output_type
 	1, // [1:2] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
