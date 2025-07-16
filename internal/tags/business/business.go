@@ -8,9 +8,10 @@ import (
 )
 
 type TagRepository interface {
-	CreateTag(ctx context.Context, tag *tagmodel.TagCreate) error
+	CreateTag(ctx context.Context, input *tagmodel.TagCreate) (*tagmodel.Tag, error)
 	GetTagByID(ctx context.Context, id int) (*tagmodel.Tag, error)
 	UpdateTag(ctx context.Context, id int, tag *tagmodel.TagUpdate) error
+	GetTagByName(ctx context.Context, name string) (*tagmodel.Tag, error)
 }
 
 type UserRepository interface {
@@ -29,26 +30,44 @@ func NewBusiness(tagRepo TagRepository, userRepo UserRepository) *business {
 	}
 }
 
-func (b *business) CreateTag(ctx context.Context, userID int, tag *tagmodel.TagCreate) error {
+func (b *business) CreateTag(ctx context.Context, userID int, tag *tagmodel.TagCreate) (*tagmodel.Tag, error) {
 	user, err := b.userRepo.GetUserByID(ctx, userID)
 
 	if err != nil {
-		return common.ErrInternalServerError.WithError(err.Error())
+		return nil, common.ErrInternalServerError.WithError(err.Error())
 	}
 
 	if user.ID == 0 {
-		return usermodel.ErrUserNotFound
+		return nil, usermodel.ErrUserNotFound
 	}
 
-	err = b.tagRepo.CreateTag(ctx, tag)
+	tagResp, err := b.tagRepo.CreateTag(ctx, tag)
+
 	if err != nil {
-		return common.ErrInternalServerError.WithError(err.Error())
+		return nil, common.ErrInternalServerError.WithError(err.Error())
 	}
-	return nil
+	return tagResp, nil
+}
+
+func (b *business) CreateTagRPC(ctx context.Context, tag *tagmodel.TagCreate) (*tagmodel.Tag, error) {
+	tagResp, err := b.tagRepo.CreateTag(ctx, tag)
+
+	if err != nil {
+		return nil, common.ErrInternalServerError.WithError(err.Error())
+	}
+	return tagResp, nil
 }
 
 func (b *business) GetTagByID(ctx context.Context, id int) (*tagmodel.Tag, error) {
 	tag, err := b.tagRepo.GetTagByID(ctx, id)
+	if err != nil {
+		return nil, common.ErrInternalServerError.WithError(err.Error())
+	}
+	return tag, nil
+}
+
+func (b *business) GetTagByName(ctx context.Context, name string) (*tagmodel.Tag, error) {
+	tag, err := b.tagRepo.GetTagByName(ctx, name)
 	if err != nil {
 		return nil, common.ErrInternalServerError.WithError(err.Error())
 	}

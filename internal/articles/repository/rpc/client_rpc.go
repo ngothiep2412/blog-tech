@@ -33,7 +33,7 @@ func NewClient(
 	}
 }
 
-func (c *newClient) GetCategoryByID(ctx context.Context, id int) (*categorymodel.Category, error) {
+func (c *newClient) GetCategoryById(ctx context.Context, id int) (*categorymodel.Category, error) {
 	resp, err := c.categoryClient.GetCategoryById(ctx, &categorypb.GetCategoryByIdRequest{CategoryId: int32(id)})
 
 	if err != nil {
@@ -61,6 +61,23 @@ func (c *newClient) GetTagByID(ctx context.Context, id int) (*tagmodel.Tag, erro
 			ID: int(resp.Tag.Id),
 		},
 		Name: resp.Tag.Name,
+		Slug: resp.Tag.Slug,
+	}, nil
+}
+
+func (c *newClient) GetTagByName(ctx context.Context, name string) (*tagmodel.Tag, error) {
+	resp, err := c.tagClient.GetTagByName(ctx, &tagpb.GetTagByNameRequest{TagName: name})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &tagmodel.Tag{
+		SqlModel: common.SqlModel{
+			ID: int(resp.Tag.Id),
+		},
+		Name: resp.Tag.Name,
+		Slug: resp.Tag.Slug,
 	}, nil
 }
 
@@ -93,4 +110,23 @@ func (c *newClient) CreateArticleTag(ctx context.Context, articleId int, tagsId 
 	}
 
 	return nil
+}
+
+func (c *newClient) CreateTag(ctx context.Context, tagName, tagSlug string) (*tagmodel.Tag, error) {
+	tagResp, err := c.tagClient.CreateTag(ctx, &tagpb.CreateTagRequest{
+		TagSlug: tagSlug,
+		TagName: tagName,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &tagmodel.Tag{
+		SqlModel: common.SqlModel{
+			ID: int(tagResp.Tag.Id),
+		},
+		Name: tagResp.Tag.Name,
+		Slug: tagResp.Tag.Slug,
+	}, nil
 }

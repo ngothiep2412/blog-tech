@@ -6,6 +6,10 @@ import (
 	articletagpb "blog-tech/internal/article_tags/proto/pb"
 	articletagreopomysql "blog-tech/internal/article_tags/repository/mysql"
 	articletagrpc "blog-tech/internal/article_tags/transport/rpc"
+	articlebiz "blog-tech/internal/articles/business"
+	articlerepomysql "blog-tech/internal/articles/repository/mysql"
+	articlereporpc "blog-tech/internal/articles/repository/rpc"
+	articleapi "blog-tech/internal/articles/transport/api"
 	categorybiz "blog-tech/internal/categories/business"
 	categorypb "blog-tech/internal/categories/proto/pb"
 	categorymysql "blog-tech/internal/categories/repository/mysql"
@@ -46,6 +50,10 @@ type TagService interface {
 	CreateTagHdl() gin.HandlerFunc
 	GetTagByIDHdl() gin.HandlerFunc
 	UpdateTagHdl() gin.HandlerFunc
+}
+
+type ArticleService interface {
+	CreateArticleHdl() gin.HandlerFunc
 }
 
 func ComposeUserService(serviceContext sctx.ServiceContext) UserService {
@@ -144,3 +152,32 @@ func ComposeArticleTagGRPCService(serviceCtx sctx.ServiceContext) articletagpb.A
 }
 
 // Article
+func ComposeArticleService(serviceContext sctx.ServiceContext) ArticleService {
+	// Get database component
+	db := serviceContext.MustGet(common.KeyCompMySQL).(common.GormComponent)
+
+	// Initialize article repository
+	articleRepo := articlerepomysql.NewArticleRepository(db.GetDB())
+
+	// Create RPC client
+	rpcClient := articlereporpc.NewClient(
+		ComposeUserRPCClient(serviceContext),
+		ComposeCategoryRPCClient(serviceContext),
+		ComposeTagRPCClient(serviceContext),
+		ComposeArticleTagRPCClient(serviceContext),
+	)
+
+	// Initialize business layer with repositories
+	biz := articlebiz.NewArticleBusiness(
+		articleRepo,
+		rpcClient, // UserRepository
+		rpcClient, // ArticleTagRepository
+		rpcClient, // TagRepository
+		rpcClient, // CategoryRepository
+	)
+
+	// Create API handler with business logic
+	serviceAPI := articleapi.NewArticleApi(biz)
+
+	return serviceAPI
+}

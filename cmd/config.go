@@ -7,10 +7,12 @@ import (
 )
 
 type config struct {
-	grpcPort            int
-	grpcServerAddress   string
-	grpcUserAddress     string
-	grpcCategoryAddress string
+	grpcPort              int
+	grpcServerAddress     string
+	grpcUserAddress       string
+	grpcCategoryAddress   string
+	grpcTagAddress        string
+	grpcArticleTagAddress string
 }
 
 func NewConfig() *config {
@@ -49,6 +51,20 @@ func (c *config) InitFlags() {
 		"localhost:3301",
 		"gRPC category address. Default: localhost:3301",
 	)
+
+	flag.StringVar(
+		&c.grpcTagAddress,
+		"grpc-tag-address",
+		"localhost:3401",
+		"gRPC tag address. Default: localhost:3401",
+	)
+
+	flag.StringVar(
+		&c.grpcArticleTagAddress,
+		"grpc-article-tag-address",
+		"localhost:3501",
+		"gRPC article tag address. Default: localhost:3501",
+	)
 }
 
 func (c *config) Activate(_ sctx.ServiceContext) error {
@@ -73,4 +89,12 @@ func (c *config) GetGRPCUserAddress() string {
 
 func (c *config) GetGRPCCategoryAddress() string {
 	return c.grpcCategoryAddress
+}
+
+func (c *config) GetGRPCTagAddress() string {
+	return c.grpcTagAddress
+}
+
+func (c *config) GetGRPCArticleTagAddress() string {
+	return c.grpcArticleTagAddress
 }

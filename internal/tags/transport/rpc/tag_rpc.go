@@ -9,7 +9,9 @@ import (
 )
 
 type TagBusiness interface {
+	CreateTagRPC(ctx context.Context, tag *tagmodel.TagCreate) (*tagmodel.Tag, error)
 	GetTagByID(ctx context.Context, id int) (*tagmodel.Tag, error)
+	GetTagByName(ctx context.Context, name string) (*tagmodel.Tag, error)
 }
 
 type grpcService struct {
@@ -28,7 +30,40 @@ func (s *grpcService) GetTagById(ctx context.Context, req *tagpb.GetTagByIdReque
 	if err != nil {
 		return nil, common.ErrInternalServerError.WithError(err.Error())
 	}
-	return &pb.GetTagByIdResponse{
+	return &tagpb.GetTagByIdResponse{
+		Tag: &pb.Tag{
+			Id:   int32(tag.ID),
+			Name: tag.Name,
+			Slug: tag.Slug,
+		},
+	}, nil
+}
+
+func (s *grpcService) GetTagByName(ctx context.Context, req *tagpb.GetTagByNameRequest) (*tagpb.GetTagByNameResponse, error) {
+	tag, err := s.business.GetTagByName(ctx, req.TagName)
+
+	if err != nil {
+		return nil, common.ErrInternalServerError.WithError(err.Error())
+	}
+	return &tagpb.GetTagByNameResponse{
+		Tag: &pb.Tag{
+			Id:   int32(tag.ID),
+			Name: tag.Name,
+			Slug: tag.Slug,
+		},
+	}, nil
+}
+
+func (s *grpcService) CreateTag(ctx context.Context, req *tagpb.CreateTagRequest) (*tagpb.CreateTagResponse, error) {
+	tag, err := s.business.CreateTagRPC(ctx, &tagmodel.TagCreate{
+		Name: req.TagName,
+		Slug: req.TagSlug,
+	})
+
+	if err != nil {
+		return nil, common.ErrInternalServerError.WithError(err.Error())
+	}
+	return &tagpb.CreateTagResponse{
 		Tag: &pb.Tag{
 			Id:   int32(tag.ID),
 			Name: tag.Name,

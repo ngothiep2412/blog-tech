@@ -289,6 +289,118 @@ func (x *GetTagByNameResponse) GetTag() *Tag {
 	return nil
 }
 
+type CreateTagRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TagSlug       string                 `protobuf:"bytes,1,opt,name=tag_slug,json=tagSlug,proto3" json:"tag_slug,omitempty"`
+	TagName       string                 `protobuf:"bytes,2,opt,name=tag_name,json=tagName,proto3" json:"tag_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateTagRequest) Reset() {
+	*x = CreateTagRequest{}
+	mi := &file_internal_tags_proto_tag_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateTagRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateTagRequest) ProtoMessage() {}
+
+func (x *CreateTagRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_tags_proto_tag_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateTagRequest.ProtoReflect.Descriptor instead.
+func (*CreateTagRequest) Descriptor() ([]byte, []int) {
+	return file_internal_tags_proto_tag_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *CreateTagRequest) GetTagSlug() string {
+	if x != nil {
+		return x.TagSlug
+	}
+	return ""
+}
+
+func (x *CreateTagRequest) GetTagName() string {
+	if x != nil {
+		return x.TagName
+	}
+	return ""
+}
+
+type CreateTagResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Exists        bool                   `protobuf:"varint,1,opt,name=exists,proto3" json:"exists,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Tag           *Tag                   `protobuf:"bytes,3,opt,name=tag,proto3" json:"tag,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateTagResponse) Reset() {
+	*x = CreateTagResponse{}
+	mi := &file_internal_tags_proto_tag_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateTagResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateTagResponse) ProtoMessage() {}
+
+func (x *CreateTagResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_tags_proto_tag_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateTagResponse.ProtoReflect.Descriptor instead.
+func (*CreateTagResponse) Descriptor() ([]byte, []int) {
+	return file_internal_tags_proto_tag_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *CreateTagResponse) GetExists() bool {
+	if x != nil {
+		return x.Exists
+	}
+	return false
+}
+
+func (x *CreateTagResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *CreateTagResponse) GetTag() *Tag {
+	if x != nil {
+		return x.Tag
+	}
+	return nil
+}
+
 var File_internal_tags_proto_tag_proto protoreflect.FileDescriptor
 
 const file_internal_tags_proto_tag_proto_rawDesc = "" +
@@ -309,12 +421,20 @@ const file_internal_tags_proto_tag_proto_rawDesc = "" +
 	"\x14GetTagByNameResponse\x12\x16\n" +
 	"\x06exists\x18\x01 \x01(\bR\x06exists\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12\x19\n" +
-	"\x03tag\x18\x03 \x01(\v2\a.pb.TagR\x03tag2\x8c\x01\n" +
+	"\x03tag\x18\x03 \x01(\v2\a.pb.TagR\x03tag\"H\n" +
+	"\x10CreateTagRequest\x12\x19\n" +
+	"\btag_slug\x18\x01 \x01(\tR\atagSlug\x12\x19\n" +
+	"\btag_name\x18\x02 \x01(\tR\atagName\"`\n" +
+	"\x11CreateTagResponse\x12\x16\n" +
+	"\x06exists\x18\x01 \x01(\bR\x06exists\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x19\n" +
+	"\x03tag\x18\x03 \x01(\v2\a.pb.TagR\x03tag2\xc6\x01\n" +
 	"\n" +
 	"TagService\x12;\n" +
 	"\n" +
 	"GetTagById\x12\x15.pb.GetTagByIdRequest\x1a\x16.pb.GetTagByIdResponse\x12A\n" +
-	"\fGetTagByName\x12\x17.pb.GetTagByNameRequest\x1a\x18.pb.GetTagByNameResponseB\x05Z\x03pb/b\x06proto3"
+	"\fGetTagByName\x12\x17.pb.GetTagByNameRequest\x1a\x18.pb.GetTagByNameResponse\x128\n" +
+	"\tCreateTag\x12\x14.pb.CreateTagRequest\x1a\x15.pb.CreateTagResponseB\x05Z\x03pb/b\x06proto3"
 
 var (
 	file_internal_tags_proto_tag_proto_rawDescOnce sync.Once
@@ -328,26 +448,31 @@ func file_internal_tags_proto_tag_proto_rawDescGZIP() []byte {
 	return file_internal_tags_proto_tag_proto_rawDescData
 }
 
-var file_internal_tags_proto_tag_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_internal_tags_proto_tag_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_internal_tags_proto_tag_proto_goTypes = []any{
 	(*Tag)(nil),                  // 0: pb.Tag
 	(*GetTagByIdRequest)(nil),    // 1: pb.GetTagByIdRequest
 	(*GetTagByIdResponse)(nil),   // 2: pb.GetTagByIdResponse
 	(*GetTagByNameRequest)(nil),  // 3: pb.GetTagByNameRequest
 	(*GetTagByNameResponse)(nil), // 4: pb.GetTagByNameResponse
+	(*CreateTagRequest)(nil),     // 5: pb.CreateTagRequest
+	(*CreateTagResponse)(nil),    // 6: pb.CreateTagResponse
 }
 var file_internal_tags_proto_tag_proto_depIdxs = []int32{
 	0, // 0: pb.GetTagByIdResponse.tag:type_name -> pb.Tag
 	0, // 1: pb.GetTagByNameResponse.tag:type_name -> pb.Tag
-	1, // 2: pb.TagService.GetTagById:input_type -> pb.GetTagByIdRequest
-	3, // 3: pb.TagService.GetTagByName:input_type -> pb.GetTagByNameRequest
-	2, // 4: pb.TagService.GetTagById:output_type -> pb.GetTagByIdResponse
-	4, // 5: pb.TagService.GetTagByName:output_type -> pb.GetTagByNameResponse
-	4, // [4:6] is the sub-list for method output_type
-	2, // [2:4] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	0, // 2: pb.CreateTagResponse.tag:type_name -> pb.Tag
+	1, // 3: pb.TagService.GetTagById:input_type -> pb.GetTagByIdRequest
+	3, // 4: pb.TagService.GetTagByName:input_type -> pb.GetTagByNameRequest
+	5, // 5: pb.TagService.CreateTag:input_type -> pb.CreateTagRequest
+	2, // 6: pb.TagService.GetTagById:output_type -> pb.GetTagByIdResponse
+	4, // 7: pb.TagService.GetTagByName:output_type -> pb.GetTagByNameResponse
+	6, // 8: pb.TagService.CreateTag:output_type -> pb.CreateTagResponse
+	6, // [6:9] is the sub-list for method output_type
+	3, // [3:6] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_internal_tags_proto_tag_proto_init() }
@@ -361,7 +486,7 @@ func file_internal_tags_proto_tag_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_internal_tags_proto_tag_proto_rawDesc), len(file_internal_tags_proto_tag_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

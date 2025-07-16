@@ -11,7 +11,7 @@ import (
 type CategoryBusiness interface {
 	CreateCategory(ctx context.Context, userID int, category *categorymodel.CategoryCreate) error
 	UpdateCategory(ctx context.Context, category *categorymodel.CategoryUpdate) error
-	GetCategoryByID(ctx context.Context, id int) (*categorymodel.Category, error)
+	GetCategoryById(ctx context.Context, id int) (*categorymodel.Category, error)
 }
 
 type UserRepository interface {
@@ -57,8 +57,8 @@ func (b *categoryBusiness) UpdateCategory(ctx context.Context, category *categor
 	return nil
 }
 
-func (b *categoryBusiness) GetCategoryByID(ctx context.Context, id int) (*categorymodel.Category, error) {
-	category, err := b.categoryRepo.GetCategoryByID(ctx, id)
+func (b *categoryBusiness) GetCategoryById(ctx context.Context, id int) (*categorymodel.Category, error) {
+	category, err := b.categoryRepo.GetCategoryById(ctx, id)
 	if err != nil {
 		return nil, common.ErrInternalServerError.WithError(err.Error())
 	}

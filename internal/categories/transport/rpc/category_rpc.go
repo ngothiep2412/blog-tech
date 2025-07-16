@@ -8,7 +8,7 @@ import (
 )
 
 type CategoryBusiness interface {
-	GetCategoryByID(ctx context.Context, id int) (*categorymodel.Category, error)
+	GetCategoryById(ctx context.Context, id int) (*categorymodel.Category, error)
 }
 
 type grpcCategoryService struct {
@@ -22,7 +22,7 @@ func NewCategoryService(business CategoryBusiness) *grpcCategoryService {
 }
 
 func (s *grpcCategoryService) GetCategoryById(ctx context.Context, req *pb.GetCategoryByIdRequest) (*pb.GetCategoryByIdResponse, error) {
-	category, err := s.business.GetCategoryByID(ctx, int(req.CategoryId))
+	category, err := s.business.GetCategoryById(ctx, int(req.CategoryId))
 
 	if err != nil {
 		return nil, common.ErrInternalServerError.WithError(err.Error())

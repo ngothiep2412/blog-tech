@@ -2,6 +2,7 @@ package composer
 
 import (
 	"blog-tech/common"
+	articletagpb "blog-tech/internal/article_tags/proto/pb"
 	categorypb "blog-tech/internal/categories/proto/pb"
 	tagpb "blog-tech/internal/tags/proto/pb"
 	userpb "blog-tech/internal/users/proto/pb"
@@ -56,4 +57,19 @@ func ComposeTagRPCClient(serviceCtx sctx.ServiceContext) tagpb.TagServiceClient 
 	}
 
 	return tagpb.NewTagServiceClient(conn)
+}
+
+func ComposeArticleTagRPCClient(serviceCtx sctx.ServiceContext) articletagpb.ArticleTagServiceClient {
+	configComp := serviceCtx.MustGet(common.KeyCompConf).(common.ConfigComponent)
+
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	}
+
+	conn, err := grpc.NewClient(configComp.GetGRPCUserAddress(), opts...)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return articletagpb.NewArticleTagServiceClient(conn)
 }

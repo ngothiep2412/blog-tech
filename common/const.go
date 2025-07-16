@@ -1,5 +1,10 @@
 package common
 
+import (
+	"regexp"
+	"strings"
+)
+
 const (
 	KeyCompMySQL = "mysql"
 	KeyCompGIN   = "gin"
@@ -12,3 +17,17 @@ const (
 const (
 	CurrentUser = "user"
 )
+
+func GenerateSlug(s string) string {
+	s = strings.ToLower(s)
+
+	reg := regexp.MustCompile(`[^\w\s-]`)
+	s = reg.ReplaceAllString(s, "")
+
+	reg = regexp.MustCompile(`[\s_-]+`)
+	s = reg.ReplaceAllString(s, "-")
+
+	s = strings.Trim(s, "-")
+
+	return s
+}

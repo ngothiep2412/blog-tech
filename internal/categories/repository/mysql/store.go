@@ -11,7 +11,7 @@ import (
 type CategoryRepository interface {
 	CreateCategory(ctx context.Context, category *categorymodel.CategoryCreate) error
 	UpdateCategory(ctx context.Context, category *categorymodel.CategoryUpdate) error
-	GetCategoryByID(ctx context.Context, id int) (*categorymodel.Category, error)
+	GetCategoryById(ctx context.Context, id int) (*categorymodel.Category, error)
 }
 
 type categoryRepository struct {
@@ -36,7 +36,7 @@ func (s *categoryRepository) UpdateCategory(ctx context.Context, category *categ
 	return nil
 }
 
-func (s *categoryRepository) GetCategoryByID(ctx context.Context, id int) (*categorymodel.Category, error) {
+func (s *categoryRepository) GetCategoryById(ctx context.Context, id int) (*categorymodel.Category, error) {
 	var category categorymodel.Category
 
 	if err := s.db.Table(categorymodel.Category{}.TableName()).First(&category, id).Error; err != nil {

@@ -14,6 +14,8 @@ type ConfigComponent interface {
 	GetGRPCServerAddress() string
 	GetGRPCUserAddress() string
 	GetGRPCCategoryAddress() string
+	GetGRPCTagAddress() string
+	GetGRPCArticleTagAddress() string
 }
 
 type GINComponent interface {

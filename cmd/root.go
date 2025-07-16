@@ -3,7 +3,9 @@ package cmd
 import (
 	"blog-tech/common"
 	"blog-tech/composer"
+	articletagpb "blog-tech/internal/article_tags/proto/pb"
 	categorypb "blog-tech/internal/categories/proto/pb"
+	tagpb "blog-tech/internal/tags/proto/pb"
 	userpb "blog-tech/internal/users/proto/pb"
 	"blog-tech/middleware"
 	sctx "blog-tech/plugin"
@@ -70,6 +72,7 @@ func SetupRoutes(router *gin.RouterGroup, serviceCtx sctx.ServiceContext) {
 	userAPIService := composer.ComposeUserService(serviceCtx)
 	categoryAPIService := composer.ComposeCategoryService(serviceCtx)
 	tagAPIService := composer.ComposeTagService(serviceCtx)
+	articleAPIService := composer.ComposeArticleService(serviceCtx)
 
 	router.POST("/register", userAPIService.RegisterHdl())
 	router.POST("/login", userAPIService.LoginHdl())
@@ -81,6 +84,8 @@ func SetupRoutes(router *gin.RouterGroup, serviceCtx sctx.ServiceContext) {
 	router.POST("/tags", middleware.RequireAuth(), tagAPIService.CreateTagHdl())
 	router.PUT("/tags/:id", middleware.RequireAuth(), tagAPIService.UpdateTagHdl())
 	router.GET("/tags/:id", middleware.RequireAuth(), tagAPIService.GetTagByIDHdl())
+
+	router.POST("/articles", middleware.RequireAuth(), articleAPIService.CreateArticleHdl())
 }
 
 func StartGRPCServices(serviceCtx sctx.ServiceContext) {
@@ -97,11 +102,15 @@ func StartGRPCServices(serviceCtx sctx.ServiceContext) {
 	logger.Infof("GRPC Server is listening on %d ...\n", configComp.GetGRPCPort())
 	logger.Infof("GRPC User Server is listening on %s ...\n", configComp.GetGRPCUserAddress())
 	logger.Infof("GRPC Category Server is listening on %s ...\n", configComp.GetGRPCCategoryAddress())
+	logger.Infof("GRPC Tag Server is listening on %s ...\n", configComp.GetGRPCTagAddress())
+	logger.Infof("GRPC Article Tag Server is listening on %s ...\n", configComp.GetGRPCArticleTagAddress())
 
 	s := grpc.NewServer()
 
 	userpb.RegisterUserServiceServer(s, composer.ComposeUserGRPCService(serviceCtx))
 	categorypb.RegisterCategoryServiceServer(s, composer.ComposeCategoryGRPCService(serviceCtx))
+	tagpb.RegisterTagServiceServer(s, composer.ComposeTagGRPCService(serviceCtx))
+	articletagpb.RegisterArticleTagServiceServer(s, composer.ComposeArticleTagGRPCService(serviceCtx))
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalln(err)

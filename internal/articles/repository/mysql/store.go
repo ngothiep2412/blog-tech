@@ -1,4 +1,4 @@
-package articlemysql
+package articlerepomysql
 
 import (
 	articlemodel "blog-tech/internal/articles/model"

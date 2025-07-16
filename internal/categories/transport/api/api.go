@@ -71,7 +71,7 @@ func (a *api) GetCategoryByIDHdl() gin.HandlerFunc {
 			return
 		}
 
-		category, err := a.business.GetCategoryByID(c.Request.Context(), id)
+		category, err := a.business.GetCategoryById(c.Request.Context(), id)
 		if err != nil {
 			common.WriteErrorResponse(c, err)
 			return

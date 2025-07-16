@@ -13,8 +13,9 @@ func (Tag) TableName() string {
 }
 
 type TagCreate struct {
-	Name string `json:"name"`
-	Slug string `json:"slug"`
+	common.SqlModel `json:",inline"`
+	Name            string `json:"name"`
+	Slug            string `json:"slug"`
 }
 
 type TagUpdate struct {

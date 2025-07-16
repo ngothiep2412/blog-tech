@@ -11,7 +11,7 @@ import (
 )
 
 type Business interface {
-	CreateTag(ctx context.Context, userID int, tag *tagmodel.TagCreate) error
+	CreateTag(ctx context.Context, userID int, tag *tagmodel.TagCreate) (*tagmodel.Tag, error)
 	GetTagByID(ctx context.Context, id int) (*tagmodel.Tag, error)
 	UpdateTag(ctx context.Context, id int, tag *tagmodel.TagUpdate) error
 }
@@ -28,20 +28,23 @@ func NewApi(business Business) *api {
 
 func (a *api) CreateTagHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var tag tagmodel.TagCreate
-		if err := c.ShouldBindJSON(&tag); err != nil {
+		var tagReq tagmodel.TagCreate
+
+		if err := c.ShouldBindJSON(&tagReq); err != nil {
 			common.WriteErrorResponse(c, common.ErrBadRequest.WithError(err.Error()))
 			return
 		}
 
 		userID := c.MustGet(common.CurrentUser).(int)
 
-		if err := a.business.CreateTag(c.Request.Context(), userID, &tag); err != nil {
+		tagResp, err := a.business.CreateTag(c.Request.Context(), userID, &tagReq)
+
+		if err != nil {
 			common.WriteErrorResponse(c, err)
 			return
 		}
 
-		c.JSON(http.StatusOK, common.ResponseData("success"))
+		c.JSON(http.StatusOK, common.ResponseData(tagResp))
 	}
 }
 
