@@ -38,5 +38,6 @@ func (s *grpcUserService) GetUserById(ctx context.Context, req *pb.GetUserByIdRe
 			AvatarUrl: user.AvatarURL,
 			IsActive:  user.IsActive,
 		},
+		Message: "Get user successfully",
 	}, nil
 }

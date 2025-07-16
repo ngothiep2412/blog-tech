@@ -20,6 +20,17 @@ message GetTagByIdResponse {
     Tag tag = 3;
 }
 
+message GetTagByNameRequest {
+    string tag_name = 1;
+}
+
+message GetTagByNameResponse{
+    bool exists = 1;
+    string message = 2;
+    Tag tag = 3;
+}
+
 service TagService {
 	rpc GetTagById(GetTagByIdRequest) returns (GetTagByIdResponse);
+    rpc GetTagByName(GetTagByNameRequest) returns (GetTagByNameResponse);
 }

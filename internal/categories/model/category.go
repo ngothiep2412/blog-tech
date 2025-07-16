@@ -9,6 +9,10 @@ type Category struct {
 	Description     string `json:"description" gorm:"column:description"`
 }
 
+func (Category) TableName() string {
+	return "categories"
+}
+
 type CategoryCreate struct {
 	Name        string `json:"name" binding:"required"`
 	Slug        string `json:"slug" binding:"required"`

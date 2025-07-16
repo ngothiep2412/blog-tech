@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	TagService_GetTagById_FullMethodName = "/pb.TagService/GetTagById"
+	TagService_GetTagById_FullMethodName   = "/pb.TagService/GetTagById"
+	TagService_GetTagByName_FullMethodName = "/pb.TagService/GetTagByName"
 )
 
 // TagServiceClient is the client API for TagService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TagServiceClient interface {
 	GetTagById(ctx context.Context, in *GetTagByIdRequest, opts ...grpc.CallOption) (*GetTagByIdResponse, error)
+	GetTagByName(ctx context.Context, in *GetTagByNameRequest, opts ...grpc.CallOption) (*GetTagByNameResponse, error)
 }
 
 type tagServiceClient struct {
@@ -47,11 +49,22 @@ func (c *tagServiceClient) GetTagById(ctx context.Context, in *GetTagByIdRequest
 	return out, nil
 }
 
+func (c *tagServiceClient) GetTagByName(ctx context.Context, in *GetTagByNameRequest, opts ...grpc.CallOption) (*GetTagByNameResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetTagByNameResponse)
+	err := c.cc.Invoke(ctx, TagService_GetTagByName_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TagServiceServer is the server API for TagService service.
 // All implementations should embed UnimplementedTagServiceServer
 // for forward compatibility.
 type TagServiceServer interface {
 	GetTagById(context.Context, *GetTagByIdRequest) (*GetTagByIdResponse, error)
+	GetTagByName(context.Context, *GetTagByNameRequest) (*GetTagByNameResponse, error)
 }
 
 // UnimplementedTagServiceServer should be embedded to have
@@ -63,6 +76,9 @@ type UnimplementedTagServiceServer struct{}
 
 func (UnimplementedTagServiceServer) GetTagById(context.Context, *GetTagByIdRequest) (*GetTagByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTagById not implemented")
+}
+func (UnimplementedTagServiceServer) GetTagByName(context.Context, *GetTagByNameRequest) (*GetTagByNameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTagByName not implemented")
 }
 func (UnimplementedTagServiceServer) testEmbeddedByValue() {}
 
@@ -102,6 +118,24 @@ func _TagService_GetTagById_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TagService_GetTagByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTagByNameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TagServiceServer).GetTagByName(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TagService_GetTagByName_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TagServiceServer).GetTagByName(ctx, req.(*GetTagByNameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TagService_ServiceDesc is the grpc.ServiceDesc for TagService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -112,6 +146,10 @@ var TagService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTagById",
 			Handler:    _TagService_GetTagById_Handler,
+		},
+		{
+			MethodName: "GetTagByName",
+			Handler:    _TagService_GetTagByName_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

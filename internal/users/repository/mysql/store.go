@@ -30,7 +30,7 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 }
 
 func (r *userRepository) Create(ctx context.Context, user *usermodel.User) error {
-	if err := r.db.Create(user).Error; err != nil {
+	if err := r.db.Table(usermodel.User{}.TableName()).Create(user).Error; err != nil {
 		return errors.Wrap(err, usermodel.ErrCannotCreateUser.Error())
 	}
 	return nil

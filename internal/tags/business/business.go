@@ -1,4 +1,4 @@
-package business
+package tagbiz
 
 import (
 	"blog-tech/common"

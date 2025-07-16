@@ -14,16 +14,16 @@ type CategoryBusiness interface {
 	GetCategoryByID(ctx context.Context, id int) (*categorymodel.Category, error)
 }
 
-type UserCategory interface {
+type UserRepository interface {
 	GetUserByID(ctx context.Context, id int) (usermodel.User, error)
 }
 
 type categoryBusiness struct {
 	categoryRepo categoryrepository.CategoryRepository
-	userRepo     UserCategory
+	userRepo     UserRepository
 }
 
-func NewCategoryBusiness(categoryRepo categoryrepository.CategoryRepository, userRepo UserCategory) *categoryBusiness {
+func NewCategoryBusiness(categoryRepo categoryrepository.CategoryRepository, userRepo UserRepository) *categoryBusiness {
 	return &categoryBusiness{
 		categoryRepo: categoryRepo,
 		userRepo:     userRepo,

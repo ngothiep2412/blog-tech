@@ -1,4 +1,4 @@
-package tagstorerpc
+package tagreporpc
 
 import (
 	"blog-tech/common"

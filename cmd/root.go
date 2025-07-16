@@ -69,6 +69,7 @@ var rootCmd = &cobra.Command{
 func SetupRoutes(router *gin.RouterGroup, serviceCtx sctx.ServiceContext) {
 	userAPIService := composer.ComposeUserService(serviceCtx)
 	categoryAPIService := composer.ComposeCategoryService(serviceCtx)
+	tagAPIService := composer.ComposeTagService(serviceCtx)
 
 	router.POST("/register", userAPIService.RegisterHdl())
 	router.POST("/login", userAPIService.LoginHdl())
@@ -76,6 +77,10 @@ func SetupRoutes(router *gin.RouterGroup, serviceCtx sctx.ServiceContext) {
 	router.POST("/categories", middleware.RequireAuth(), categoryAPIService.CreateCategoryHdl())
 	router.PUT("/categories/:id", middleware.RequireAuth(), categoryAPIService.UpdateCategoryHdl())
 	router.GET("/categories/:id", middleware.RequireAuth(), categoryAPIService.GetCategoryByIDHdl())
+
+	router.POST("/tags", middleware.RequireAuth(), tagAPIService.CreateTagHdl())
+	router.PUT("/tags/:id", middleware.RequireAuth(), tagAPIService.UpdateTagHdl())
+	router.GET("/tags/:id", middleware.RequireAuth(), tagAPIService.GetTagByIDHdl())
 }
 
 func StartGRPCServices(serviceCtx sctx.ServiceContext) {

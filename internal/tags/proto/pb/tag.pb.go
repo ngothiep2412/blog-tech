@@ -185,6 +185,110 @@ func (x *GetTagByIdResponse) GetTag() *Tag {
 	return nil
 }
 
+type GetTagByNameRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TagName       string                 `protobuf:"bytes,1,opt,name=tag_name,json=tagName,proto3" json:"tag_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetTagByNameRequest) Reset() {
+	*x = GetTagByNameRequest{}
+	mi := &file_internal_tags_proto_tag_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetTagByNameRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetTagByNameRequest) ProtoMessage() {}
+
+func (x *GetTagByNameRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_tags_proto_tag_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetTagByNameRequest.ProtoReflect.Descriptor instead.
+func (*GetTagByNameRequest) Descriptor() ([]byte, []int) {
+	return file_internal_tags_proto_tag_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetTagByNameRequest) GetTagName() string {
+	if x != nil {
+		return x.TagName
+	}
+	return ""
+}
+
+type GetTagByNameResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Exists        bool                   `protobuf:"varint,1,opt,name=exists,proto3" json:"exists,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Tag           *Tag                   `protobuf:"bytes,3,opt,name=tag,proto3" json:"tag,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetTagByNameResponse) Reset() {
+	*x = GetTagByNameResponse{}
+	mi := &file_internal_tags_proto_tag_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetTagByNameResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetTagByNameResponse) ProtoMessage() {}
+
+func (x *GetTagByNameResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_tags_proto_tag_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetTagByNameResponse.ProtoReflect.Descriptor instead.
+func (*GetTagByNameResponse) Descriptor() ([]byte, []int) {
+	return file_internal_tags_proto_tag_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *GetTagByNameResponse) GetExists() bool {
+	if x != nil {
+		return x.Exists
+	}
+	return false
+}
+
+func (x *GetTagByNameResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *GetTagByNameResponse) GetTag() *Tag {
+	if x != nil {
+		return x.Tag
+	}
+	return nil
+}
+
 var File_internal_tags_proto_tag_proto protoreflect.FileDescriptor
 
 const file_internal_tags_proto_tag_proto_rawDesc = "" +
@@ -199,11 +303,18 @@ const file_internal_tags_proto_tag_proto_rawDesc = "" +
 	"\x12GetTagByIdResponse\x12\x16\n" +
 	"\x06exists\x18\x01 \x01(\bR\x06exists\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12\x19\n" +
-	"\x03tag\x18\x03 \x01(\v2\a.pb.TagR\x03tag2I\n" +
+	"\x03tag\x18\x03 \x01(\v2\a.pb.TagR\x03tag\"0\n" +
+	"\x13GetTagByNameRequest\x12\x19\n" +
+	"\btag_name\x18\x01 \x01(\tR\atagName\"c\n" +
+	"\x14GetTagByNameResponse\x12\x16\n" +
+	"\x06exists\x18\x01 \x01(\bR\x06exists\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x19\n" +
+	"\x03tag\x18\x03 \x01(\v2\a.pb.TagR\x03tag2\x8c\x01\n" +
 	"\n" +
 	"TagService\x12;\n" +
 	"\n" +
-	"GetTagById\x12\x15.pb.GetTagByIdRequest\x1a\x16.pb.GetTagByIdResponseB\x05Z\x03pb/b\x06proto3"
+	"GetTagById\x12\x15.pb.GetTagByIdRequest\x1a\x16.pb.GetTagByIdResponse\x12A\n" +
+	"\fGetTagByName\x12\x17.pb.GetTagByNameRequest\x1a\x18.pb.GetTagByNameResponseB\x05Z\x03pb/b\x06proto3"
 
 var (
 	file_internal_tags_proto_tag_proto_rawDescOnce sync.Once
@@ -217,21 +328,26 @@ func file_internal_tags_proto_tag_proto_rawDescGZIP() []byte {
 	return file_internal_tags_proto_tag_proto_rawDescData
 }
 
-var file_internal_tags_proto_tag_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_internal_tags_proto_tag_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_internal_tags_proto_tag_proto_goTypes = []any{
-	(*Tag)(nil),                // 0: pb.Tag
-	(*GetTagByIdRequest)(nil),  // 1: pb.GetTagByIdRequest
-	(*GetTagByIdResponse)(nil), // 2: pb.GetTagByIdResponse
+	(*Tag)(nil),                  // 0: pb.Tag
+	(*GetTagByIdRequest)(nil),    // 1: pb.GetTagByIdRequest
+	(*GetTagByIdResponse)(nil),   // 2: pb.GetTagByIdResponse
+	(*GetTagByNameRequest)(nil),  // 3: pb.GetTagByNameRequest
+	(*GetTagByNameResponse)(nil), // 4: pb.GetTagByNameResponse
 }
 var file_internal_tags_proto_tag_proto_depIdxs = []int32{
 	0, // 0: pb.GetTagByIdResponse.tag:type_name -> pb.Tag
-	1, // 1: pb.TagService.GetTagById:input_type -> pb.GetTagByIdRequest
-	2, // 2: pb.TagService.GetTagById:output_type -> pb.GetTagByIdResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	0, // 1: pb.GetTagByNameResponse.tag:type_name -> pb.Tag
+	1, // 2: pb.TagService.GetTagById:input_type -> pb.GetTagByIdRequest
+	3, // 3: pb.TagService.GetTagByName:input_type -> pb.GetTagByNameRequest
+	2, // 4: pb.TagService.GetTagById:output_type -> pb.GetTagByIdResponse
+	4, // 5: pb.TagService.GetTagByName:output_type -> pb.GetTagByNameResponse
+	4, // [4:6] is the sub-list for method output_type
+	2, // [2:4] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_internal_tags_proto_tag_proto_init() }
@@ -245,7 +361,7 @@ func file_internal_tags_proto_tag_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_internal_tags_proto_tag_proto_rawDesc), len(file_internal_tags_proto_tag_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

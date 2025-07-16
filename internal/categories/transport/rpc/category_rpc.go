@@ -34,5 +34,6 @@ func (s *grpcCategoryService) GetCategoryById(ctx context.Context, req *pb.GetCa
 			Slug:        category.Slug,
 			Description: category.Description,
 		},
+		Message: "Get Category successfully",
 	}, nil
 }

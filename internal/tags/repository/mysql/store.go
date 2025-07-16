@@ -1,4 +1,4 @@
-package tagstoremysql
+package tagrepomysql
 
 import (
 	tagmodel "blog-tech/internal/tags/model"
@@ -17,7 +17,7 @@ func NewTagRepository(db *gorm.DB) *tagRepository {
 }
 
 func (s *tagRepository) CreateTag(ctx context.Context, tag *tagmodel.TagCreate) error {
-	err := s.db.Create(tag).Error
+	err := s.db.Table(tagmodel.Tag{}.TableName()).Create(tag).Error
 	if err != nil {
 		return errors.Wrap(err, tagmodel.ErrCannotCreateTag.Error())
 	}

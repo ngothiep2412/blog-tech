@@ -2,12 +2,22 @@ package composer
 
 import (
 	"blog-tech/common"
+	articletagbiz "blog-tech/internal/article_tags/business"
+	articletagpb "blog-tech/internal/article_tags/proto/pb"
+	articletagreopomysql "blog-tech/internal/article_tags/repository/mysql"
+	articletagrpc "blog-tech/internal/article_tags/transport/rpc"
 	categorybiz "blog-tech/internal/categories/business"
 	categorypb "blog-tech/internal/categories/proto/pb"
 	categorymysql "blog-tech/internal/categories/repository/mysql"
 	categorystorerpc "blog-tech/internal/categories/repository/rpc"
 	categoryapi "blog-tech/internal/categories/transport/api"
 	categoryrpc "blog-tech/internal/categories/transport/rpc"
+	tagbiz "blog-tech/internal/tags/business"
+	tagpb "blog-tech/internal/tags/proto/pb"
+	tagrepomysql "blog-tech/internal/tags/repository/mysql"
+	tagreporpc "blog-tech/internal/tags/repository/rpc"
+	tagapi "blog-tech/internal/tags/transport/api"
+	tagrpc "blog-tech/internal/tags/transport/rpc"
 	userbiz "blog-tech/internal/users/business"
 	userpb "blog-tech/internal/users/proto/pb"
 	usermysql "blog-tech/internal/users/repository/mysql"
@@ -30,6 +40,12 @@ type CategoryService interface {
 	CreateCategoryHdl() gin.HandlerFunc
 	UpdateCategoryHdl() gin.HandlerFunc
 	GetCategoryByIDHdl() gin.HandlerFunc
+}
+
+type TagService interface {
+	CreateTagHdl() gin.HandlerFunc
+	GetTagByIDHdl() gin.HandlerFunc
+	UpdateTagHdl() gin.HandlerFunc
 }
 
 func ComposeUserService(serviceContext sctx.ServiceContext) UserService {
@@ -70,7 +86,7 @@ func ComposeUserGRPCService(serviceCtx sctx.ServiceContext) userpb.UserServiceSe
 
 func ComposeCategoryService(serviceContext sctx.ServiceContext) CategoryService {
 	db := serviceContext.MustGet(common.KeyCompMySQL).(common.GormComponent)
-	categoryRepo := categorymysql.NewCategoryStore(db.GetDB())
+	categoryRepo := categorymysql.NewCategoryRepository(db.GetDB())
 
 	userClient := categorystorerpc.NewClient(ComposeUserRPCClient(serviceContext))
 
@@ -82,7 +98,7 @@ func ComposeCategoryService(serviceContext sctx.ServiceContext) CategoryService 
 
 func ComposeCategoryGRPCService(serviceCtx sctx.ServiceContext) categorypb.CategoryServiceServer {
 	db := serviceCtx.MustGet(common.KeyCompMySQL).(common.GormComponent)
-	categoryRepo := categorymysql.NewCategoryStore(db.GetDB())
+	categoryRepo := categorymysql.NewCategoryRepository(db.GetDB())
 
 	biz := categorybiz.NewCategoryBusiness(categoryRepo, nil)
 
@@ -90,3 +106,41 @@ func ComposeCategoryGRPCService(serviceCtx sctx.ServiceContext) categorypb.Categ
 
 	return categoryService
 }
+
+func ComposeTagService(serviceContext sctx.ServiceContext) TagService {
+	db := serviceContext.MustGet(common.KeyCompMySQL).(common.GormComponent)
+	tagRepo := tagrepomysql.NewTagRepository(db.GetDB())
+
+	userClient := tagreporpc.NewClient(ComposeUserRPCClient(serviceContext))
+
+	biz := tagbiz.NewBusiness(tagRepo, userClient)
+
+	serviceAPI := tagapi.NewApi(biz)
+
+	return serviceAPI
+}
+
+func ComposeTagGRPCService(serviceCtx sctx.ServiceContext) tagpb.TagServiceServer {
+	db := serviceCtx.MustGet(common.KeyCompMySQL).(common.GormComponent)
+	tagRepo := tagrepomysql.NewTagRepository(db.GetDB())
+
+	biz := tagbiz.NewBusiness(tagRepo, nil)
+
+	tagService := tagrpc.NewTagService(biz)
+
+	return tagService
+}
+
+// Article-Tag
+func ComposeArticleTagGRPCService(serviceCtx sctx.ServiceContext) articletagpb.ArticleTagServiceServer {
+	db := serviceCtx.MustGet(common.KeyCompMySQL).(common.GormComponent)
+	articleTagRepo := articletagreopomysql.NewArticleTagRepository(db.GetDB())
+
+	biz := articletagbiz.NewArticleTagBusiness(articleTagRepo)
+
+	articleTagService := articletagrpc.NewArticleTagService(biz)
+
+	return articleTagService
+}
+
+// Article

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "pb/";
+
+message CreateArticleTagsRequest {
+    int32 article_id = 1;
+    repeated int32 tag_ids = 2;
+}
+
+message CreateArticleTagsResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+service ArticleTagService {
+    rpc CreateArticleTags(CreateArticleTagsRequest) returns (CreateArticleTagsResponse);
+}
