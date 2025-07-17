@@ -22,7 +22,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func newServiceCtx() sctx.ServiceContext {
+func NewServiceCtx() sctx.ServiceContext {
 	return sctx.NewServiceContext(
 		sctx.WithName("Blog Tech Service"),
 		sctx.WithComponent(ginc.NewGin(common.KeyCompGIN)),
@@ -36,7 +36,7 @@ var rootCmd = &cobra.Command{
 	Short: "Blog Tech",
 	Long:  "A tech blog application",
 	Run: func(cmd *cobra.Command, args []string) {
-		serviceCtx := newServiceCtx()
+		serviceCtx := NewServiceCtx()
 
 		logger := sctx.GlobalLogger().GetLogger("service")
 
@@ -73,6 +73,7 @@ func SetupRoutes(router *gin.RouterGroup, serviceCtx sctx.ServiceContext) {
 	categoryAPIService := composer.ComposeCategoryService(serviceCtx)
 	tagAPIService := composer.ComposeTagService(serviceCtx)
 	articleAPIService := composer.ComposeArticleService(serviceCtx)
+	articleLikeAPIService := composer.ComposeArticleLikeService(serviceCtx)
 
 	router.POST("/register", userAPIService.RegisterHdl())
 	router.POST("/login", userAPIService.LoginHdl())
@@ -87,6 +88,9 @@ func SetupRoutes(router *gin.RouterGroup, serviceCtx sctx.ServiceContext) {
 	router.GET("/tags/:id", middleware.RequireAuth(), tagAPIService.GetTagByIDHdl())
 
 	router.POST("/articles", middleware.RequireAuth(), articleAPIService.CreateArticleHdl())
+
+	router.POST("/articles/:article_id/like", middleware.RequireAuth(), articleLikeAPIService.LikeArticleHdl())
+	router.DELETE("/articles/:article_id/like", middleware.RequireAuth(), articleLikeAPIService.UnlikeArticleHdl())
 }
 
 func StartGRPCServices(serviceCtx sctx.ServiceContext) {

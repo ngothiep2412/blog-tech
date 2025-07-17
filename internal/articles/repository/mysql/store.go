@@ -69,3 +69,47 @@ func (s *articleRepository) GetArticles(ctx context.Context) ([]articlemodel.Art
 	}
 	return articles, nil
 }
+
+func (r *articleRepository) IncreaseLikeCount(ctx context.Context, id int) error {
+	tx := r.db.Begin()
+
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Table(articlemodel.Article{}.TableName()).Where("id = ?", id).
+		Update("like_count", gorm.Expr("like_count + 1")).Error; err != nil {
+		tx.Rollback()
+		return errors.Wrap(err, articlemodel.ErrCannotUpdateArticle.Error())
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+func (r *articleRepository) DecreaseLikeCount(ctx context.Context, id int) error {
+	tx := r.db.Begin()
+
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Table(articlemodel.Article{}.TableName()).Where("id = ?", id).
+		Update("like_count", gorm.Expr("like_count - 1")).Error; err != nil {
+		tx.Rollback()
+		return errors.Wrap(err, articlemodel.ErrCannotUpdateArticle.Error())
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}

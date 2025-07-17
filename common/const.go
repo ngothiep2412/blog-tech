@@ -18,6 +18,10 @@ const (
 	CurrentUser = "user"
 )
 
+const (
+	ArticleLikeTopic = "article-like-events"
+)
+
 func GenerateSlug(s string) string {
 	s = strings.ToLower(s)
 

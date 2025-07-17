@@ -2,6 +2,9 @@ package composer
 
 import (
 	"blog-tech/common"
+	articlelikebusiness "blog-tech/internal/article_likes/business"
+	articlelikerepository "blog-tech/internal/article_likes/repository"
+	articlelikeapi "blog-tech/internal/article_likes/transport/api"
 	articletagbiz "blog-tech/internal/article_tags/business"
 	articletagpb "blog-tech/internal/article_tags/proto/pb"
 	articletagreopomysql "blog-tech/internal/article_tags/repository/mysql"
@@ -26,6 +29,7 @@ import (
 	userpb "blog-tech/internal/users/proto/pb"
 	usermysql "blog-tech/internal/users/repository/mysql"
 	sctx "blog-tech/plugin"
+	"blog-tech/plugin/kafka"
 	"log"
 	"os"
 
@@ -55,6 +59,11 @@ type TagService interface {
 
 type ArticleService interface {
 	CreateArticleHdl() gin.HandlerFunc
+}
+
+type ArticleLikeService interface {
+	LikeArticleHdl() gin.HandlerFunc
+	UnlikeArticleHdl() gin.HandlerFunc
 }
 
 func ComposeUserService(serviceContext sctx.ServiceContext) UserService {
@@ -182,4 +191,17 @@ func ComposeArticleService(serviceContext sctx.ServiceContext) ArticleService {
 	serviceAPI := articleapi.NewArticleApi(biz)
 
 	return serviceAPI
+}
+
+func ComposeArticleLikeService(serviceCtx sctx.ServiceContext) ArticleLikeService {
+	db := serviceCtx.MustGet(common.KeyCompMySQL).(common.GormComponent).GetDB()
+	kafkaConfig := kafka.NewConfig()
+	producer := kafka.NewProducer(kafkaConfig, common.ArticleLikeTopic)
+
+	repo := articlelikerepository.NewArticleLikeRepository(db)
+	business := articlelikebusiness.NewLikeArticleBusiness(repo, producer)
+
+	servcieAPI := articlelikeapi.NewArticleLikeApi(business)
+
+	return servcieAPI
 }

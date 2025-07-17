@@ -8,6 +8,6 @@ var outenvCmd = &cobra.Command{
 	Use:   "outenv",
 	Short: "Show environment variables",
 	Run: func(cmd *cobra.Command, args []string) {
-		newServiceCtx().OutEnv()
+		NewServiceCtx().OutEnv()
 	},
 }
