@@ -149,7 +149,6 @@ func ComposeTagGRPCService(serviceCtx sctx.ServiceContext) tagpb.TagServiceServe
 	return tagService
 }
 
-// Article-Tag
 func ComposeArticleTagGRPCService(serviceCtx sctx.ServiceContext) articletagpb.ArticleTagServiceServer {
 	db := serviceCtx.MustGet(common.KeyCompMySQL).(common.GormComponent)
 	articleTagRepo := articletagreopomysql.NewArticleTagRepository(db.GetDB())
@@ -161,15 +160,11 @@ func ComposeArticleTagGRPCService(serviceCtx sctx.ServiceContext) articletagpb.A
 	return articleTagService
 }
 
-// Article
 func ComposeArticleService(serviceContext sctx.ServiceContext) ArticleService {
-	// Get database component
 	db := serviceContext.MustGet(common.KeyCompMySQL).(common.GormComponent)
 
-	// Initialize article repository
 	articleRepo := articlerepomysql.NewArticleRepository(db.GetDB())
 
-	// Create RPC client
 	rpcClient := articlereporpc.NewClient(
 		ComposeUserRPCClient(serviceContext),
 		ComposeCategoryRPCClient(serviceContext),
@@ -177,16 +172,13 @@ func ComposeArticleService(serviceContext sctx.ServiceContext) ArticleService {
 		ComposeArticleTagRPCClient(serviceContext),
 	)
 
-	// Initialize business layer with repositories
 	biz := articlebiz.NewArticleBusiness(
 		articleRepo,
-		rpcClient, // UserRepository
-		rpcClient, // ArticleTagRepository
-		rpcClient, // TagRepository
-		rpcClient, // CategoryRepository
+		rpcClient,
+		rpcClient,
+		rpcClient,
+		rpcClient,
 	)
-
-	// Create API handler with business logic
 	serviceAPI := articleapi.NewArticleApi(biz)
 
 	return serviceAPI

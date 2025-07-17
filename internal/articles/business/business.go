@@ -102,7 +102,7 @@ func (b *articleBusiness) CreateArticle(ctx context.Context, req *articlemodel.A
 		Slug:             common.GenerateSlug(req.Title),
 	}
 
-	if req.Status == "published" {
+	if req.Status == articlemodel.StatusPublished {
 		now := time.Now()
 		articleCreation.PublishedAt = &now
 	}

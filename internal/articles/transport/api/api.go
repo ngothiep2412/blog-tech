@@ -36,6 +36,9 @@ func (a *articleApi) CreateArticleHdl() gin.HandlerFunc {
 
 		req.UserID = userID
 
+		status := articlemodel.StatusPublished
+		req.Status = status
+
 		artcileResp, err := a.business.CreateArticle(c.Request.Context(), &req)
 		if err != nil {
 			common.WriteErrorResponse(c, err)

@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+const (
+	StatusDraft     = "draft"
+	StatusPublished = "published"
+)
+
 type Article struct {
 	common.SqlModel  `json:",inline"`
 	UserID           int        `json:"user_id" gorm:"column:user_id"`
