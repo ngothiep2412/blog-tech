@@ -35,6 +35,7 @@ func (s *articleRepository) CreateArticle(ctx context.Context, articleReq *artic
 		Excerpt:          articleReq.Excerpt,
 		FeaturedImageURL: articleReq.FeaturedImageURL,
 		Status:           articleReq.Status,
+		PublishedAt:      articleReq.PublishedAt,
 	}
 
 	if err := tx.Table(articlemodel.Article{}.TableName()).Create(&tags).Error; err != nil {
