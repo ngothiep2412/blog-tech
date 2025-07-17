@@ -31,14 +31,15 @@ func (Article) TableName() string {
 
 type ArticleCreate struct {
 	common.SqlModel  `json:",inline"`
-	UserID           int    `json:"user_id" validate:"required,gt=0"`
-	CategoryID       int    `json:"category_id" validate:"required,gt=0"`
-	Title            string `json:"title" validate:"required,min=1,max=255"`
-	Content          string `json:"content" validate:"required,min=10"`
-	Excerpt          string `json:"excerpt" validate:"max=500"`
-	FeaturedImageURL string `json:"featured_image_url" validate:"omitempty,url"`
-	Status           string `json:"status" validate:"required,oneof=draft published archived"`
-	Slug             string `json:"slug" gorm:"column:slug"`
+	UserID           int        `json:"user_id" gorm:"column:user_id"`
+	CategoryID       int        `json:"category_id" gorm:"column:category_id"`
+	Title            string     `json:"title" gorm:"column:title"`
+	Content          string     `json:"content" gorm:"column:content"`
+	Excerpt          string     `json:"excerpt" gorm:"column:excerpt"`
+	FeaturedImageURL string     `json:"featured_image_url" gorm:"column:featured_image_url"`
+	Status           string     `json:"status" gorm:"column:status"`
+	Slug             string     `json:"slug" gorm:"column:slug"`
+	PublishedAt      *time.Time `json:"published_at" gorm:"column:published_at"`
 
 	Tags []tagmodel.Tag `json:"tags" gorm:"-"`
 }

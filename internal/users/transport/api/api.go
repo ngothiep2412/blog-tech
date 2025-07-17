@@ -51,7 +51,7 @@ func (h *handler) LoginHdl() gin.HandlerFunc {
 			return
 		}
 
-		user, token, err := h.business.Login(c.Request.Context(), &req)
+		user, accessToken, refreshToken, err := h.business.Login(c.Request.Context(), &req)
 
 		if err != nil {
 			common.WriteErrorResponse(c, err)
@@ -59,8 +59,31 @@ func (h *handler) LoginHdl() gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusOK, common.ResponseData(userdto.LoginResponse{
-			User:  user,
-			Token: token,
+			User:         user,
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+		}))
+	}
+}
+
+func (h *handler) RefreshTokenHdl() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var req userdto.RefreshTokenRequest
+
+		if err := c.ShouldBindJSON(&req); err != nil {
+			common.WriteErrorResponse(c, common.ErrBadRequest.WithError(err.Error()))
+			return
+		}
+
+		accessToken, refreshToken, err := h.business.RefreshToken(c.Request.Context(), &req)
+		if err != nil {
+			common.WriteErrorResponse(c, err)
+			return
+		}
+
+		c.JSON(http.StatusOK, common.ResponseData(userdto.RefreshTokenResponse{
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
 		}))
 	}
 }

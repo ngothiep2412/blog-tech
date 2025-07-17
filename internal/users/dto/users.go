@@ -13,6 +13,16 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	User  *usermodel.User `json:"user"`
-	Token string          `json:"token"`
+	User         *usermodel.User `json:"user"`
+	AccessToken  string          `json:"access_token"`
+	RefreshToken string          `json:"refresh_token"`
+}
+
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}
+
+type RefreshTokenResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }

@@ -99,37 +99,27 @@ func (b *articleBusiness) CreateArticle(ctx context.Context, req *articlemodel.A
 		Excerpt:          req.Excerpt,
 		FeaturedImageURL: req.FeaturedImageURL,
 		Status:           req.Status,
+		Slug:             common.GenerateSlug(req.Title),
 	}
 
-	err = b.articleRepo.CreateArticle(ctx, articleCreation)
+	if req.Status == "published" {
+		now := time.Now()
+		articleCreation.PublishedAt = &now
+	}
+
+	articleResp, err := b.articleRepo.CreateArticle(ctx, articleCreation)
 
 	if err != nil {
 		return nil, common.ErrInternalServerError.WithError(err.Error())
 	}
 
 	if len(tagIDs) > 0 {
-		err := b.articleTagRepo.CreateArticleTag(ctx, articleCreation.ID, tagIDs)
+		err := b.articleTagRepo.CreateArticleTag(ctx, articleResp.ID, tagIDs)
 
 		if err != nil {
 			return nil, common.ErrInternalServerError.WithError(err.Error())
 		}
 	}
 
-	article := &articlemodel.Article{
-		UserID:           req.UserID,
-		CategoryID:       req.CategoryID,
-		Title:            req.Title,
-		Content:          req.Content,
-		Slug:             common.GenerateSlug(req.Title),
-		Excerpt:          req.Excerpt,
-		FeaturedImageURL: req.FeaturedImageURL,
-		Status:           req.Status,
-	}
-
-	if req.Status == "published" {
-		now := time.Now()
-		article.PublishedAt = &now
-	}
-
-	return article, nil
+	return articleResp, nil
 }

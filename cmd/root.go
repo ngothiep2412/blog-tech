@@ -76,6 +76,7 @@ func SetupRoutes(router *gin.RouterGroup, serviceCtx sctx.ServiceContext) {
 
 	router.POST("/register", userAPIService.RegisterHdl())
 	router.POST("/login", userAPIService.LoginHdl())
+	router.POST("/refresh-token", userAPIService.RefreshTokenHdl())
 
 	router.POST("/categories", middleware.RequireAuth(), categoryAPIService.CreateCategoryHdl())
 	router.PUT("/categories/:id", middleware.RequireAuth(), categoryAPIService.UpdateCategoryHdl())

@@ -38,6 +38,7 @@ import (
 type UserService interface {
 	RegisterHdl() gin.HandlerFunc
 	LoginHdl() gin.HandlerFunc
+	RefreshTokenHdl() gin.HandlerFunc
 }
 
 type CategoryService interface {
@@ -61,11 +62,16 @@ func ComposeUserService(serviceContext sctx.ServiceContext) UserService {
 	userRepo := usermysql.NewUserRepository(db.GetDB())
 
 	secret := os.Getenv("JWT_SECRET")
+	refreshSecret := os.Getenv("JWT_REFRESH_SECRET")
+
 	if secret == "" {
 		log.Fatal("JWT_SECRET is not set")
 	}
+	if refreshSecret == "" {
+		log.Fatal("JWT_REFRESH_SECRET is not set")
+	}
 
-	jwtManager := common.NewJwtManager(secret)
+	jwtManager := common.NewJwtManager(secret, refreshSecret)
 
 	biz := userbiz.NewUserBusiness(userRepo, jwtManager)
 	serviceAPI := userAPI.NewHandler(biz)
@@ -78,11 +84,15 @@ func ComposeUserGRPCService(serviceCtx sctx.ServiceContext) userpb.UserServiceSe
 	// jwtComp := serviceCtx.MustGet(common.KeyCompJWT).(common.JwtManager)
 
 	secret := os.Getenv("JWT_SECRET")
+	refreshSecret := os.Getenv("JWT_REFRESH_SECRET")
 	if secret == "" {
 		log.Fatal("JWT_SECRET is not set")
 	}
+	if refreshSecret == "" {
+		log.Fatal("JWT_REFRESH_SECRET is not set")
+	}
 
-	jwtManager := common.NewJwtManager(secret)
+	jwtManager := common.NewJwtManager(secret, refreshSecret)
 
 	userRepo := usermysql.NewUserRepository(db.GetDB())
 

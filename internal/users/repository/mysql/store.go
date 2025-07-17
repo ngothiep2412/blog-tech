@@ -30,8 +30,15 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 }
 
 func (r *userRepository) Create(ctx context.Context, user *usermodel.User) error {
-	if err := r.db.Table(usermodel.User{}.TableName()).Create(user).Error; err != nil {
+	tx := r.db.Begin()
+
+	if err := tx.Table(usermodel.User{}.TableName()).Create(user).Error; err != nil {
+		tx.Rollback()
 		return errors.Wrap(err, usermodel.ErrCannotCreateUser.Error())
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return errors.WithStack(err)
 	}
 	return nil
 }
@@ -72,15 +79,27 @@ func (r *userRepository) GetUserByUsername(ctx context.Context, username string)
 }
 
 func (r *userRepository) Update(ctx context.Context, user *usermodel.User) error {
-	if err := r.db.Table(usermodel.User{}.TableName()).Where("id = ?", user.ID).Updates(user).Error; err != nil {
+	tx := r.db.Begin()
+
+	if err := tx.Table(usermodel.User{}.TableName()).Where("id = ?", user.ID).Updates(user).Error; err != nil {
+		tx.Rollback()
 		return errors.Wrap(err, usermodel.ErrCannotUpdateUser.Error())
+	}
+	if err := tx.Commit().Error; err != nil {
+		return errors.WithStack(err)
 	}
 	return nil
 }
 
 func (r *userRepository) Delete(ctx context.Context, id int) error {
-	if err := r.db.Table(usermodel.User{}.TableName()).Where("id = ?", id).Delete(&usermodel.User{}).Error; err != nil {
+	tx := r.db.Begin()
+
+	if err := tx.Table(usermodel.User{}.TableName()).Where("id = ?", id).Delete(&usermodel.User{}).Error; err != nil {
+		tx.Rollback()
 		return errors.Wrap(err, usermodel.ErrCannotDeleteUser.Error())
+	}
+	if err := tx.Commit().Error; err != nil {
+		return errors.WithStack(err)
 	}
 	return nil
 }

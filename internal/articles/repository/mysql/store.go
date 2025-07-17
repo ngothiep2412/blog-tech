@@ -1,6 +1,7 @@
 package articlerepomysql
 
 import (
+	"blog-tech/common"
 	articlemodel "blog-tech/internal/articles/model"
 	"context"
 
@@ -9,7 +10,7 @@ import (
 )
 
 type ArticleRepository interface {
-	CreateArticle(ctx context.Context, article *articlemodel.ArticleCreate) error
+	CreateArticle(ctx context.Context, articleReq *articlemodel.ArticleCreate) (*articlemodel.Article, error)
 	GetArticleByID(ctx context.Context, id int) (*articlemodel.Article, error)
 	GetArticles(ctx context.Context) ([]articlemodel.Article, error)
 }
@@ -22,11 +23,29 @@ func NewArticleRepository(db *gorm.DB) *articleRepository {
 	return &articleRepository{db: db}
 }
 
-func (s *articleRepository) CreateArticle(ctx context.Context, article *articlemodel.ArticleCreate) error {
-	if err := s.db.Table(articlemodel.Article{}.TableName()).Create(&article).Error; err != nil {
-		return errors.Wrap(err, articlemodel.ErrCannotCreateArticle.Error())
+func (s *articleRepository) CreateArticle(ctx context.Context, articleReq *articlemodel.ArticleCreate) (*articlemodel.Article, error) {
+	tx := s.db.Begin()
+	tags := articlemodel.Article{
+		SqlModel:         common.NewSqlModel(),
+		UserID:           articleReq.UserID,
+		CategoryID:       articleReq.CategoryID,
+		Title:            articleReq.Title,
+		Content:          articleReq.Content,
+		Slug:             articleReq.Slug,
+		Excerpt:          articleReq.Excerpt,
+		FeaturedImageURL: articleReq.FeaturedImageURL,
+		Status:           articleReq.Status,
 	}
-	return nil
+
+	if err := tx.Table(articlemodel.Article{}.TableName()).Create(&tags).Error; err != nil {
+		tx.Rollback()
+		return nil, errors.Wrap(err, articlemodel.ErrCannotCreateArticle.Error())
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return &tags, nil
 }
 
 func (s *articleRepository) GetArticleByID(ctx context.Context, id int) (*articlemodel.Article, error) {

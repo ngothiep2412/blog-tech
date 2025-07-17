@@ -20,7 +20,7 @@ func extractTokenFromHeaderString(s string) (string, error) {
 }
 
 func RequireAuth() gin.HandlerFunc {
-	jwtManager := common.NewJwtManager(os.Getenv("JWT_SECRET"))
+	jwtManager := common.NewJwtManager(os.Getenv("JWT_SECRET"), os.Getenv("JWT_REFRESH_SECRET"))
 	return func(c *gin.Context) {
 		token, err := extractTokenFromHeaderString(c.Request.Header.Get("Authorization"))
 

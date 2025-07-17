@@ -12,12 +12,13 @@ import (
 
 type UserBusiness interface {
 	Register(ctx context.Context, req *usermodel.CreateUserRequest) (*usermodel.User, string, error)
-	Login(ctx context.Context, req *userdto.LoginRequest) (*usermodel.User, string, error)
+	Login(ctx context.Context, req *userdto.LoginRequest) (*usermodel.User, string, string, error)
 	GetProfile(ctx context.Context, userID int) (*usermodel.User, error)
 	UpdateProfile(ctx context.Context, userID int, req *usermodel.UpdateUserRequest) (*usermodel.User, error)
 	ChangePassword(ctx context.Context, userID int, req *usermodel.ChangePasswordRequest) error
 	ListUsers(ctx context.Context, limit, offset int) ([]*usermodel.User, int64, error)
 	DeactivateUser(ctx context.Context, userID int) error
+	RefreshToken(ctx context.Context, req *userdto.RefreshTokenRequest) (string, string, error)
 }
 
 type userBusiness struct {
@@ -70,33 +71,33 @@ func (b *userBusiness) Register(ctx context.Context, req *usermodel.CreateUserRe
 	return user, token, nil
 }
 
-func (b *userBusiness) Login(ctx context.Context, req *userdto.LoginRequest) (*usermodel.User, string, error) {
+func (b *userBusiness) Login(ctx context.Context, req *userdto.LoginRequest) (*usermodel.User, string, string, error) {
 	if req.Email == "" || req.Password == "" {
-		return nil, "", usermodel.ErrRequiredField
+		return nil, "", "", usermodel.ErrRequiredField
 	}
 
 	user, err := b.userRepo.GetUserByEmail(ctx, strings.ToLower(req.Email))
 	if err != nil {
 		if err == usermodel.ErrUserNotFound {
-			return nil, "", usermodel.ErrInvalidCredentials
+			return nil, "", "", usermodel.ErrInvalidCredentials
 		}
-		return nil, "", err
+		return nil, "", "", err
 	}
 
 	if !user.IsActive {
-		return nil, "", usermodel.ErrUserInactive
+		return nil, "", "", usermodel.ErrUserInactive
 	}
 
 	if !common.CheckPassword(req.Password, user.PasswordHash) {
-		return nil, "", usermodel.ErrInvalidCredentials
+		return nil, "", "", usermodel.ErrInvalidCredentials
 	}
 
-	token, err := b.JwtManager.GenerateToken(user.ID, user.Email)
+	accessToken, refreshToken, err := b.JwtManager.GenerateTokens(user.ID, user.Email)
 	if err != nil {
-		return nil, "", usermodel.ErrTokenGeneration
+		return nil, "", "", usermodel.ErrTokenGeneration
 	}
 
-	return user, token, nil
+	return user, accessToken, refreshToken, nil
 }
 
 func (b *userBusiness) GetProfile(ctx context.Context, userID int) (*usermodel.User, error) {
@@ -170,4 +171,28 @@ func (b *userBusiness) DeactivateUser(ctx context.Context, userID int) error {
 
 	user.IsActive = false
 	return b.userRepo.Update(ctx, user)
+}
+
+func (b *userBusiness) RefreshToken(ctx context.Context, req *userdto.RefreshTokenRequest) (string, string, error) {
+	claims, err := b.JwtManager.ValidateRefreshToken(req.RefreshToken)
+
+	if err != nil {
+		return "", "", usermodel.ErrTokenInvalid
+	}
+
+	user, err := b.userRepo.GetUserByID(ctx, claims.UserID)
+	if err != nil {
+		return "", "", usermodel.ErrUserNotFound
+	}
+
+	if !user.IsActive {
+		return "", "", usermodel.ErrUserInactive
+	}
+
+	accessToken, err := b.JwtManager.GenerateToken(claims.UserID, claims.Email)
+	if err != nil {
+		return "", "", usermodel.ErrTokenGeneration
+	}
+
+	return accessToken, "", nil
 }

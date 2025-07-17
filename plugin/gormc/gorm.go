@@ -23,6 +23,10 @@ const (
 	GormDBTypeNotSupported
 )
 
+var (
+	DefaultDsn = "root:241201@tcp(127.0.0.1:3307)/blog_tech?charset=utf8mb4&parseTime=True&loc=Local"
+)
+
 type GormOpt struct {
 	dsn                   string
 	dbType                string
@@ -60,7 +64,7 @@ func (gdb *gormDB) InitFlags() {
 	flag.StringVar(
 		&gdb.dsn,
 		fmt.Sprintf("%sdb-dsn", prefix),
-		"",
+		DefaultDsn,
 		"Database dsn",
 	)
 
